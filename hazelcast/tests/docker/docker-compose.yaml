@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+  hazelcast1:
+    image: hazelcast/hazelcast:${HAZELCAST_VERSION}
+    container_name: hazelcast1
+    environment:
+      JAVA_OPTS: >-
+        -Dhazelcast.jmx=true
+        -Dcom.sun.management.jmxremote
+        -Dcom.sun.management.jmxremote.port=1098
+        -Dcom.sun.management.jmxremote.ssl=false
+        -Dcom.sun.management.jmxremote.authenticate=false
+        -Dcom.sun.management.jmxremote.rmi.port=1198
+        -Djava.rmi.server.hostname=localhost
+    ports:
+      - "1098:1098"
+      - "1198:1198"
+    networks:
+      - dd_hazelcast
+
+  hazelcast2:
+    image: hazelcast/hazelcast:${HAZELCAST_VERSION}
+    container_name: hazelcast2
+    environment:
+      JAVA_OPTS: >-
+        -Dhazelcast.jmx=true
+        -Dcom.sun.management.jmxremote
+        -Dcom.sun.management.jmxremote.port=1099
+        -Dcom.sun.management.jmxremote.ssl=false
+        -Dcom.sun.management.jmxremote.authenticate=false
+        -Dcom.sun.management.jmxremote.rmi.port=1199
+        -Djava.rmi.server.hostname=localhost
+    ports:
+      - "1099:1099"
+      - "1199:1199"
+    networks:
+      - dd_hazelcast
+
+networks:
+  dd_hazelcast:
