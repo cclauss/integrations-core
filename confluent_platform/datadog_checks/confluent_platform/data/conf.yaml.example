@@ -699,3 +699,13 @@ init_config:
         topics.list.request-error-rate:
           alias: $domain.$type.$attribute
           metric_type: gauge
+
+  # Components Metrics:
+  #   - Kafka Schema Registry: https://docs.confluent.io/current/schema-registry/monitoring.html
+  - include:
+      domain: kafka.schema.registry
+      bean: kafka.schema.registry:type=master-slave-role
+      attribute:
+        master-slave-role:
+          alias: $domain.$type.$attribute
+          metric_type: gauge

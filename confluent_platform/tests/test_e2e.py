@@ -52,7 +52,7 @@ CONNECT_METRICS = [
     'kafka.connect.connect_worker_rebalance_metrics.time_since_last_rebalance_ms',
 ]
 
-REST_METRICS = [
+REST_JETTY_METRICS = [
     'kafka.rest.jetty_metrics.connections_active',
     'kafka.rest.jetty_metrics.connections_closed_rate',
     'kafka.rest.jetty_metrics.connections_opened_rate',
@@ -104,7 +104,7 @@ REST_JERSEY_METRICS = [
     'kafka.rest.jersey_metrics.topics.list.request_error_rate',
 ]
 
-SCHEMA_REGISTRY_METRICS = [
+SCHEMA_REGISTRY_JETTY_METRICS = [
     'kafka.schema.registry.jetty_metrics.connections_active',
     'kafka.schema.registry.jetty_metrics.connections_closed_rate',
     'kafka.schema.registry.jetty_metrics.connections_opened_rate',
@@ -156,13 +156,24 @@ SCHEMA_REGISTRY_JERSEY_METRICS = [
     'kafka.schema.registry.jersey_metrics.topics.list.request_error_rate',
 ]
 
+SCHEMA_REGISTRY_METRICS = [
+    'kafka.schema.registry.master_slave_role.master_slave_role',
+]
+
 BROKER_OPTIONAL_METRICS = [
     'kafka.log.log_flush_stats.log_flush_rate_and_time_ms.avg',
 ]
 
-ALWAYS_PRESENT_METRICS = BROKER_METRICS + CONNECT_METRICS + REST_METRICS + SCHEMA_REGISTRY_METRICS
+ALWAYS_PRESENT_METRICS = (BROKER_METRICS
+                          + CONNECT_METRICS
+                          + REST_JETTY_METRICS
+                          + SCHEMA_REGISTRY_JETTY_METRICS
+                          + SCHEMA_REGISTRY_METRICS
+                          )
 
-NOT_ALWAYS_PRESENT_METRICS = BROKER_OPTIONAL_METRICS + REST_JERSEY_METRICS + SCHEMA_REGISTRY_JERSEY_METRICS
+NOT_ALWAYS_PRESENT_METRICS = (BROKER_OPTIONAL_METRICS
+                              + REST_JERSEY_METRICS
+                              + SCHEMA_REGISTRY_JERSEY_METRICS)
 
 
 @pytest.mark.e2e
