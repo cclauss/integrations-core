@@ -12,18 +12,6 @@ from .metrics import build_metrics
 
 BROKER_METRICS = [
     'kafka.cluster.partition.under_min_isr',
-    'kafka.connect.connect_worker_metrics.connector_count',
-    'kafka.connect.connect_worker_metrics.connector_startup_attempts_total',
-    'kafka.connect.connect_worker_metrics.connector_startup_failure_percentage',
-    'kafka.connect.connect_worker_metrics.connector_startup_failure_total',
-    'kafka.connect.connect_worker_metrics.connector_startup_success_percentage',
-    'kafka.connect.connect_worker_metrics.connector_startup_success_total',
-    'kafka.connect.connect_worker_metrics.task_count',
-    'kafka.connect.connect_worker_metrics.task_startup_attempts_total',
-    'kafka.connect.connect_worker_metrics.task_startup_failure_percentage',
-    'kafka.connect.connect_worker_metrics.task_startup_failure_total',
-    'kafka.connect.connect_worker_metrics.task_startup_success_percentage',
-    'kafka.connect.connect_worker_metrics.task_startup_success_total',
     'kafka.controller.controller_stats.leader_election_rate_and_time_ms.avg',
     'kafka.controller.kafka_controller.active_controller_count',
     'kafka.controller.kafka_controller.offline_partitions_count',
@@ -44,11 +32,26 @@ BROKER_METRICS = [
     'kafka.server.replica_manager.under_replicated_partitions',
 ]
 
+CONNECT_METRICS = [
+    'kafka.connect.connect_worker_metrics.connector_count',
+    'kafka.connect.connect_worker_metrics.connector_startup_attempts_total',
+    'kafka.connect.connect_worker_metrics.connector_startup_failure_percentage',
+    'kafka.connect.connect_worker_metrics.connector_startup_failure_total',
+    'kafka.connect.connect_worker_metrics.connector_startup_success_percentage',
+    'kafka.connect.connect_worker_metrics.connector_startup_success_total',
+    'kafka.connect.connect_worker_metrics.task_count',
+    'kafka.connect.connect_worker_metrics.task_startup_attempts_total',
+    'kafka.connect.connect_worker_metrics.task_startup_failure_percentage',
+    'kafka.connect.connect_worker_metrics.task_startup_failure_total',
+    'kafka.connect.connect_worker_metrics.task_startup_success_percentage',
+    'kafka.connect.connect_worker_metrics.task_startup_success_total',
+]
+
 BROKER_OPTIONAL_METRICS = [
     'kafka.log.log_flush_stats.log_flush_rate_and_time_ms.avg',
 ]
 
-METRICS = BROKER_METRICS
+METRICS = BROKER_METRICS + CONNECT_METRICS
 
 # metrics not always present
 OPTIONAL_METRICS = BROKER_OPTIONAL_METRICS
@@ -59,7 +62,7 @@ def test_e2e(dd_agent_check):
     instance = {}
     aggregator = dd_agent_check(instance, rate=True)  # type: AggregatorStub
 
-    # Mark jvm. metrics as asserted
+    # Mark default jvm. metrics as asserted
     for metric_name in aggregator._metrics:
         if metric_name.startswith('jvm.'):
             aggregator.assert_metric(metric_name)
