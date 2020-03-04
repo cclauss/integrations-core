@@ -8,8 +8,8 @@ instances:
 
 #  - host: localhost  # confluentinc/cp-zookeeper
 #    port: 31000      # OK
-  - host: localhost  # confluentinc/cp-server
-    port: 31001      # OK
+#  - host: localhost  # confluentinc/cp-server
+#    port: 31001      # OK
   - host: localhost  # cnfldemos/cp-server-connect-datagen
     port: 31002      # OK
 ##  - host: localhost  # confluentinc/cp-enterprise-control-center
@@ -258,29 +258,57 @@ init_config:
 
   - include:
       # https://kafka.apache.org/documentation/#connect_monitoring
-      bean: 'kafka.connect:type=connect-worker-metrics'
+      domain_regex: kafka\..*
+      bean: kafka.connect:type=connect-worker-metrics
       attribute:
         connector-count:
           alias: $domain.$type.$attribute
+          metric_type: gauge
         connector-startup-attempts-total:
           alias: $domain.$type.$attribute
+          metric_type: gauge
         connector-startup-failure-percentage:
           alias: $domain.$type.$attribute
+          metric_type: gauge
         connector-startup-failure-total:
           alias: $domain.$type.$attribute
+          metric_type: gauge
         connector-startup-success-percentage:
           alias: $domain.$type.$attribute
+          metric_type: gauge
         connector-startup-success-total:
           alias: $domain.$type.$attribute
+          metric_type: gauge
         task-count:
           alias: $domain.$type.$attribute
+          metric_type: gauge
         task-startup-attempts-total:
           alias: $domain.$type.$attribute
+          metric_type: gauge
         task-startup-failure-percentage:
           alias: $domain.$type.$attribute
+          metric_type: gauge
         task-startup-failure-total:
           alias: $domain.$type.$attribute
+          metric_type: gauge
         task-startup-success-percentage:
           alias: $domain.$type.$attribute
+          metric_type: gauge
         task-startup-success-total:
           alias: $domain.$type.$attribute
+          metric_type: gauge
+
+
+#Bean: kafka.connect:type=connect-worker-metrics
+#    connector-startup-failure-percentage:The average percentage of this worker's connectors starts that failed.
+#    task-startup-attempts-total:The total number of task startups that this worker has attempted.
+#    connector-startup-success-total:The total number of connector starts that succeeded.
+#    connector-startup-failure-total:The total number of connector starts that failed.
+#    task-startup-success-percentage:The average percentage of this worker's tasks starts that succeeded.
+#    connector-startup-attempts-total:The total number of connector startups that this worker has attempted.
+#    connector-count:The number of connectors run in this worker.
+#    connector-startup-success-percentage:The average percentage of this worker's connectors starts that succeeded.
+#    task-startup-success-total:The total number of task starts that succeeded.
+#    task-startup-failure-percentage:The average percentage of this worker's tasks starts that failed.
+#    task-count:The number of tasks run in this worker.
+#    task-startup-failure-total:The total number of task starts that failed.

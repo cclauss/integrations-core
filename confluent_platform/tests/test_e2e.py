@@ -42,6 +42,7 @@ BROKER_METRICS = [
     'kafka.server.replica_manager.partition_count',
     'kafka.server.replica_manager.under_min_isr_partition_count',
     'kafka.server.replica_manager.under_replicated_partitions',
+    'kafka.log.log_flush_stats.log_flush_rate_and_time_ms.avg',
 ]
 
 ALL_METRICS = BROKER_METRICS
@@ -60,7 +61,7 @@ def test_e2e(dd_agent_check):
     for metric in ALL_METRICS:
         aggregator.assert_metric(metric)
 
-    # aggregator.assert_all_metrics_covered()
+    aggregator.assert_all_metrics_covered()
 
     # for metric_name, metrics in iteritems(aggregator._metrics):
     #     # print("{} => {}".format(metric_name, metrics))
