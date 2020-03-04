@@ -88,10 +88,12 @@ def get_beans_config():
             'alias': '$domain.$type.$name',
             'metrics': [
                 Metric(COUNT, 'count', check_metric=False),  # `agent check` doesn't return jmx count metrics yet
-                Metric(GAUGE, 'fifteen_minute_rate', per_unit_name='second'),
-                Metric(GAUGE, 'five_minute_rate', per_unit_name='second'),
-                Metric(GAUGE, 'one_minute_rate', per_unit_name='second'),
-                Metric(GAUGE, 'mean_rate', per_unit_name='second'),
+
+                # Note: metrics below commented for now since we are unsure about the value brought by those
+                # Metric(GAUGE, 'mean_rate', per_unit_name='second'),
+                # Metric(GAUGE, 'fifteen_minute_rate', per_unit_name='second'),
+                # Metric(GAUGE, 'five_minute_rate', per_unit_name='second'),
+                # Metric(GAUGE, 'one_minute_rate', per_unit_name='second'),
             ],
             'beans': [b for b in all_beans if b.yammer_type == 'YAMMER_METER']
         },
@@ -103,20 +105,22 @@ def get_beans_config():
             'alias': '$domain.$type.$name',
             'metrics': [
                 Metric(COUNT, 'count', check_metric=False),  # `agent check` doesn't return jmx count metrics yet
-                Metric(GAUGE, '50percentile', per_unit_name='second'),
-                Metric(GAUGE, '75percentile', per_unit_name='second'),
-                Metric(GAUGE, '95percentile', per_unit_name='second'),
-                Metric(GAUGE, '98percentile', per_unit_name='second'),
-                Metric(GAUGE, '99percentile', per_unit_name='second'),
-                Metric(GAUGE, '999percentile', per_unit_name='second'),
-                Metric(GAUGE, 'fifteen_minute_rate', per_unit_name='second'),
-                Metric(GAUGE, 'five_minute_rate', per_unit_name='second'),
-                Metric(GAUGE, 'one_minute_rate', per_unit_name='second'),
-                Metric(GAUGE, 'max', per_unit_name='second'),
                 Metric(GAUGE, 'mean', per_unit_name='second'),
-                Metric(GAUGE, 'mean_rate', per_unit_name='second'),
-                Metric(GAUGE, 'min', per_unit_name='second'),
-                Metric(GAUGE, 'std_dev', per_unit_name='second'),
+
+                # Note: metrics below commented for now since we are unsure about the value brought by those
+                # Metric(GAUGE, '50percentile', per_unit_name='second'),
+                # Metric(GAUGE, '75percentile', per_unit_name='second'),
+                # Metric(GAUGE, '95percentile', per_unit_name='second'),
+                # Metric(GAUGE, '98percentile', per_unit_name='second'),
+                # Metric(GAUGE, '99percentile', per_unit_name='second'),
+                # Metric(GAUGE, '999percentile', per_unit_name='second'),
+                # Metric(GAUGE, 'fifteen_minute_rate', per_unit_name='second'),
+                # Metric(GAUGE, 'five_minute_rate', per_unit_name='second'),
+                # Metric(GAUGE, 'one_minute_rate', per_unit_name='second'),
+                # Metric(GAUGE, 'max', per_unit_name='second'),
+                # Metric(GAUGE, 'mean_rate', per_unit_name='second'),
+                # Metric(GAUGE, 'min', per_unit_name='second'),
+                # Metric(GAUGE, 'std_dev', per_unit_name='second'),
             ],
             'beans': [b for b in all_beans if b.yammer_type == 'YAMMER_TIMER']
         },
@@ -128,16 +132,18 @@ def get_beans_config():
             'alias': '$domain.$type.$name',
             'metrics': [
                 Metric(COUNT, 'count', check_metric=False),  # `agent check` doesn't return jmx count metrics yet
-                Metric(GAUGE, '50percentile', per_unit_name='second'),
-                Metric(GAUGE, '75percentile', per_unit_name='second'),
-                Metric(GAUGE, '95percentile', per_unit_name='second'),
-                Metric(GAUGE, '98percentile', per_unit_name='second'),
-                Metric(GAUGE, '99percentile', per_unit_name='second'),
-                Metric(GAUGE, '999percentile', per_unit_name='second'),
-                Metric(GAUGE, 'max', per_unit_name='second'),
                 Metric(GAUGE, 'mean', per_unit_name='second'),
-                Metric(GAUGE, 'min', per_unit_name='second'),
-                Metric(GAUGE, 'std_dev', per_unit_name='second'),
+
+                # Note: metrics below commented for now since we are unsure about the value brought by those
+                # Metric(GAUGE, '50percentile', per_unit_name='second'),
+                # Metric(GAUGE, '75percentile', per_unit_name='second'),
+                # Metric(GAUGE, '95percentile', per_unit_name='second'),
+                # Metric(GAUGE, '98percentile', per_unit_name='second'),
+                # Metric(GAUGE, '99percentile', per_unit_name='second'),
+                # Metric(GAUGE, '999percentile', per_unit_name='second'),
+                # Metric(GAUGE, 'max', per_unit_name='second'),
+                # Metric(GAUGE, 'min', per_unit_name='second'),
+                # Metric(GAUGE, 'std_dev', per_unit_name='second'),
             ],
             'beans': [b for b in all_beans if b.yammer_type == 'YAMMER_HISTOGRAM']
         },
