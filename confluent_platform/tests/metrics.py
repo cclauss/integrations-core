@@ -20,16 +20,17 @@ class Attribute:
 
 
 class Metric:
-    def __init__(self, metric_type, suffix=None, per_unit_name='', orientation=0, check_metric=True):
+    def __init__(self, metric_type, suffix=None, per_unit_name='', desc='', orientation=0, check_metric=True):
         self.suffix = suffix
         self.metric_type = metric_type
         self.per_unit_name = per_unit_name
+        self.desc = desc
         self.orientation = orientation
         self.check_metric = check_metric
 
 
 class MBean:
-    def __init__(self, bean_name, yammer_type, desc='', unit_name='', attrs=None, check_metric=True):
+    def __init__(self, bean_name, yammer_type=None, desc='', unit_name='', attrs=None, check_metric=True):
         self.bean_name = bean_name
         self.desc = desc
         self.unit_name = unit_name
@@ -49,16 +50,20 @@ class MBean:
 
         return domain, props
 
-    def get_metric_name(self, alias):
+    def get_metric_name(self, alias, suffix):
         metric_name = alias.replace('$domain', camel_to_snake(self.domain))
         metric_name = metric_name.replace('$type', camel_to_snake(self.props['type']))
-        metric_name = metric_name.replace('$name', camel_to_snake(self.props['name']))
+        if '$name' in metric_name:
+            metric_name = metric_name.replace('$name', camel_to_snake(self.props['name']))
+        if suffix:
+            metric_name = "{}.{}".format(metric_name, suffix)
+        metric_name = metric_name.replace('-', '_')
         return metric_name
 
 
 def get_beans_config():
     all_beans = []
-    for component in ['broker']:
+    for component in ['broker', 'connector']:
         with open(os.path.join(HERE, 'metrics', '{}.csv'.format(component)), 'r') as f:
             reader = csv.DictReader(f)
             for row in reader:
@@ -147,16 +152,46 @@ def get_beans_config():
             ],
             'beans': [b for b in all_beans if b.yammer_type == 'YAMMER_HISTOGRAM']
         },
+        # Connector Metrics
+        {
+            'alias': '$domain.$type',
+            'metrics': [
+                Metric(GAUGE, "connector-count", desc="The number of connectors run in this worker."),
+                Metric(GAUGE, "connector-startup-attempts-total",
+                       desc="The total number of connector startups that this worker has attempted."),
+                Metric(GAUGE, "connector-startup-failure-percentage",
+                       desc="The average percentage of this worker's connectors starts that failed."),
+                Metric(GAUGE, "connector-startup-failure-total",
+                       desc="The total number of connector starts that failed."),
+                Metric(GAUGE, "connector-startup-success-percentage",
+                       desc="The average percentage of this worker's connectors starts that succeeded."),
+                Metric(GAUGE, "connector-startup-success-total",
+                       desc="The total number of connector starts that succeeded."),
+                Metric(GAUGE, "task-count", desc="The number of tasks run in this worker."),
+                Metric(GAUGE, "task-startup-attempts-total",
+                       desc="The total number of task startups that this worker has attempted."),
+                Metric(GAUGE, "task-startup-failure-percentage",
+                       desc="The average percentage of this worker's tasks starts that failed."),
+                Metric(GAUGE, "task-startup-failure-total", desc="The total number of task starts that failed."),
+                Metric(GAUGE, "task-startup-success-percentage",
+                       desc="The average percentage of this worker's tasks starts that succeeded."),
+                Metric(GAUGE, "task-startup-success-total", desc="The total number of task starts that succeeded."),
+            ],
+            'beans': [
+                MBean('kafka.connect:type=connect-worker-metrics', check_metric=True)
+            ]
+        },
     ]
 
 
 def build_one_metric(metric, alias, bean, current_metrics):
     current_metrics = current_metrics or {}
-    metric_name = bean.get_metric_name(alias)
+    metric_name = bean.get_metric_name(alias, metric.suffix)
     desc = bean.desc.rstrip('.')
 
-    if metric.suffix:
-        metric_name = "{}.{}".format(bean.get_metric_name(alias), metric.suffix)
+    if metric.desc:
+        desc = metric.desc
+    else:
         desc = "{} ({})".format(desc, metric.suffix)
 
     current_metric = current_metrics.get(metric_name)

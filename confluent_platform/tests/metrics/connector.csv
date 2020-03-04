@@ -1,0 +1,2 @@
+bean,type,unit_name,description,check_metric
+kafka.connect:type=connect-worker-metrics,ATTRIBUTE,,,TRUE

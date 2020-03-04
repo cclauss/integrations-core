@@ -10,8 +10,8 @@ instances:
 #    port: 31000      # OK
   - host: localhost  # confluentinc/cp-server
     port: 31001      # OK
-#  - host: localhost  # cnfldemos/cp-server-connect-datagen
-#    port: 31002      # OK
+  - host: localhost  # cnfldemos/cp-server-connect-datagen
+    port: 31002      # OK
 ##  - host: localhost  # confluentinc/cp-enterprise-control-center
 ##    port: 31003      # DOES NOT WORK
 #  - host: localhost  # confluentinc/cp-ksql-server
@@ -255,3 +255,32 @@ init_config:
         Mean:
           alias: $domain.$type.$name.avg
           metric_type: gauge
+
+  - include:
+      # https://kafka.apache.org/documentation/#connect_monitoring
+      bean: 'kafka.connect:type=connect-worker-metrics'
+      attribute:
+        connector-count:
+          alias: $domain.$type.$attribute
+        connector-startup-attempts-total:
+          alias: $domain.$type.$attribute
+        connector-startup-failure-percentage:
+          alias: $domain.$type.$attribute
+        connector-startup-failure-total:
+          alias: $domain.$type.$attribute
+        connector-startup-success-percentage:
+          alias: $domain.$type.$attribute
+        connector-startup-success-total:
+          alias: $domain.$type.$attribute
+        task-count:
+          alias: $domain.$type.$attribute
+        task-startup-attempts-total:
+          alias: $domain.$type.$attribute
+        task-startup-failure-percentage:
+          alias: $domain.$type.$attribute
+        task-startup-failure-total:
+          alias: $domain.$type.$attribute
+        task-startup-success-percentage:
+          alias: $domain.$type.$attribute
+        task-startup-success-total:
+          alias: $domain.$type.$attribute
