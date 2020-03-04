@@ -297,18 +297,3 @@ init_config:
         task-startup-success-total:
           alias: $domain.$type.$attribute
           metric_type: gauge
-
-
-#Bean: kafka.connect:type=connect-worker-metrics
-#    connector-startup-failure-percentage:The average percentage of this worker's connectors starts that failed.
-#    task-startup-attempts-total:The total number of task startups that this worker has attempted.
-#    connector-startup-success-total:The total number of connector starts that succeeded.
-#    connector-startup-failure-total:The total number of connector starts that failed.
-#    task-startup-success-percentage:The average percentage of this worker's tasks starts that succeeded.
-#    connector-startup-attempts-total:The total number of connector startups that this worker has attempted.
-#    connector-count:The number of connectors run in this worker.
-#    connector-startup-success-percentage:The average percentage of this worker's connectors starts that succeeded.
-#    task-startup-success-total:The total number of task starts that succeeded.
-#    task-startup-failure-percentage:The average percentage of this worker's tasks starts that failed.
-#    task-count:The number of tasks run in this worker.
-#    task-startup-failure-total:The total number of task starts that failed.
