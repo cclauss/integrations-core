@@ -52,11 +52,17 @@ CONNECT_METRICS = [
     'kafka.connect.connect_worker_rebalance_metrics.time_since_last_rebalance_ms',
 ]
 
+REST_METRICS = [
+    'kafka.rest.jetty_metrics.connections_active',
+    'kafka.rest.jetty_metrics.connections_closed_rate',
+    'kafka.rest.jetty_metrics.connections_opened_rate',
+]
+
 BROKER_OPTIONAL_METRICS = [
     'kafka.log.log_flush_stats.log_flush_rate_and_time_ms.avg',
 ]
 
-METRICS = BROKER_METRICS + CONNECT_METRICS
+METRICS = BROKER_METRICS + CONNECT_METRICS + REST_METRICS
 
 # metrics not always present
 OPTIONAL_METRICS = BROKER_OPTIONAL_METRICS
