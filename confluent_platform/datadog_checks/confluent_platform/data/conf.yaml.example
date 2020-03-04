@@ -155,14 +155,35 @@ init_config:
       # Uncomment when https://github.com/DataDog/jmxfetch/pull/277 is merged
       # class_regex: .*$Gauge
       domain_regex: kafka\..*
+      bean:
+        - kafka.controller:type=KafkaController,name=OfflinePartitionsCount
+        - kafka.controller:type=KafkaController,name=ActiveControllerCount
+        - kafka.server:type=ReplicaManager,name=UnderMinIsrPartitionCount
+        - kafka.server:type=ReplicaManager,name=UnderReplicatedPartitions
+        - kafka.server:type=ReplicaManager,name=PartitionCount
+        - kafka.server:type=ReplicaManager,name=LeaderCount
+        - kafka.server:type=ReplicaFetcherManager,name=MaxLag,clientId=Replica
+        - kafka.network:type=SocketServer,name=NetworkProcessorAvgIdlePercent
+        - kafka.network:type=RequestChannel,name=RequestQueueSize
+        - kafka.server:type=DelayedOperationPurgatory,name=PurgatorySize,delayedOperation=Produce
+        - kafka.server:type=DelayedOperationPurgatory,name=PurgatorySize,delayedOperation=Fetch
       attribute:
         Value:
           alias: $domain.$type.$name
           metric_type: gauge
-    exclude:
-      bean:
-        - kafka.server:type=SessionExpireListener,name=SessionState
-        - kafka.server:type=KafkaServer,name=ClusterId
+
+  - include:
+      # Uncomment when https://github.com/DataDog/jmxfetch/pull/277 is merged
+      # class_regex: .*$Gauge
+      domain_regex: kafka\..*
+      bean_regex:
+        - kafka\.cluster:type=Partition,name=UnderMinIsr,.*
+        - kafka\.server:type=FetcherLagMetrics,name=ConsumerLag,.*
+      attribute:
+        Value:
+          alias: $domain.$type.$name
+          metric_type: gauge
+
   - include:
       # Uncomment when https://github.com/DataDog/jmxfetch/pull/277 is merged
       # class_regex: .*$Meter
@@ -183,6 +204,7 @@ init_config:
         FifteenMinuteRate:
           alias: $domain.$type.$name.fifteen_minute_rate
           metric_type: gauge
+
   - include:
       # Uncomment when https://github.com/DataDog/jmxfetch/pull/277 is merged
       # class_regex: .*$Timer
