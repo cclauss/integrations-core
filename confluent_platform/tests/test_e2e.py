@@ -58,11 +58,57 @@ REST_METRICS = [
     'kafka.rest.jetty_metrics.connections_opened_rate',
 ]
 
+REST_JERSEY_METRICS = [
+    'kafka.rest.jersey_metrics.brokers.list.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.assign_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.assignment_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.commit.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.commit_offsets_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.committed_offsets_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.create.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.create_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.delete.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.delete_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.records.read_avro_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.records.read_binary_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.records.read_json_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.seek_to_beginning_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.seek_to_end_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.seek_to_offset_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.subscribe_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.subscription_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.topic.read_avro.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.topic.read_binary.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.topic.read_json.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.unsubscribe_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.consume_avro.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.consume_binary.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.consume_json.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.get.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.get_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.produce_avro.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.produce_avro_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.produce_binary.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.produce_binary_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.produce_json.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.produce_json_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.partitions.list.request_error_rate',
+    'kafka.rest.jersey_metrics.partitions.list_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.request_error_rate',
+    'kafka.rest.jersey_metrics.root.get.request_error_rate',
+    'kafka.rest.jersey_metrics.root.post.request_error_rate',
+    'kafka.rest.jersey_metrics.topic.get.request_error_rate',
+    'kafka.rest.jersey_metrics.topic.produce_avro.request_error_rate',
+    'kafka.rest.jersey_metrics.topic.produce_binary.request_error_rate',
+    'kafka.rest.jersey_metrics.topic.produce_json.request_error_rate',
+    'kafka.rest.jersey_metrics.topics.list.request_error_rate',
+]
+
 BROKER_OPTIONAL_METRICS = [
     'kafka.log.log_flush_stats.log_flush_rate_and_time_ms.avg',
 ]
 
-METRICS = BROKER_METRICS + CONNECT_METRICS + REST_METRICS
+METRICS = BROKER_METRICS + CONNECT_METRICS + REST_METRICS+ REST_JERSEY_METRICS
 
 # metrics not always present
 OPTIONAL_METRICS = BROKER_OPTIONAL_METRICS

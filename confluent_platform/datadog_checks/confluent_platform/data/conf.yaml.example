@@ -561,3 +561,139 @@ init_config:
           # The average rate per second of closed TCP connections.
           alias: $domain.$type.$attribute
           metric_type: gauge
+
+  # Kafka REST Metrics
+  # https://docs.confluent.io/current/kafka-rest/monitoring.html
+  - include:
+      domain: kafka.rest
+      bean: kafka.rest:type=jersey-metrics
+      attribute:
+        brokers.list.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.assign+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.assignment+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.commit-offsets+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.commit.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.committed-offsets+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.create+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.create.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.delete+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.delete.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.records.read-avro+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.records.read-binary+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.records.read-json+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.seek-to-beginning+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.seek-to-end+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.seek-to-offset+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.subscribe+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.subscription+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.topic.read-avro.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.topic.read-binary.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.topic.read-json.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        consumer.unsubscribe+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        partition.consume-avro.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        partition.consume-binary.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        partition.consume-json.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        partition.get+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        partition.get.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        partition.produce-avro+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        partition.produce-avro.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        partition.produce-binary+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        partition.produce-binary.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        partition.produce-json+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        partition.produce-json.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        partitions.list+v2.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        partitions.list.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        root.get.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        root.post.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        topic.get.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        topic.produce-avro.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        topic.produce-binary.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        topic.produce-json.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        topics.list.request-error-rate:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
