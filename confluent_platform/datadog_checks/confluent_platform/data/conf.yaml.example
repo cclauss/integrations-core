@@ -350,3 +350,42 @@ init_config:
         time-since-last-rebalance-ms:
           alias: $domain.$type.$attribute
           metric_type: gauge
+
+  # Kafka Connect Metrics
+  # https://kafka.apache.org/documentation/#connect_monitoring
+  - include:
+      domain_regex: kafka\..*
+      bean_regex: kafka\.connect:type=connector-task-metrics,connector=.*,task=.*
+      attribute:s
+        batch-size-avg:
+          # The average size of the batches processed by the connector.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        batch-size-max:
+          # The maximum size of the batches processed by the connector.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        offset-commit-avg-time-ms:
+          # The average time in milliseconds taken by this task to commit offsets.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        offset-commit-failure-percentage:
+          # The average percentage of this task's offset commit attempts that failed.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        offset-commit-max-time-ms:
+          # The maximum time in milliseconds taken by this task to commit offsets.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        offset-commit-success-percentage:
+          # The average percentage of this task's offset commit attempts that succeeded.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        pause-ratio:
+          # The fraction of time this task has spent in the pause state.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        running-ratio:
+          # The fraction of time this task has spent in the running state.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
