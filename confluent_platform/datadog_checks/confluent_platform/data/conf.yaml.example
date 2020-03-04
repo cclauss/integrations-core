@@ -143,7 +143,7 @@ init_config:
   ## @param collect_default_metrics - boolean - required
   ## Whether or not the check should collect all default metrics for this integration.
   #
-  collect_default_metrics: false
+  collect_default_metrics: true
 
   ## @param conf - list of objects - required
   ## List of metrics to be collected by the integration
