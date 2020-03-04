@@ -563,11 +563,12 @@ init_config:
           alias: $domain.$type.$attribute
           metric_type: gauge
 
-  # Kafka REST Metrics
-  # https://docs.confluent.io/current/kafka-rest/monitoring.html
+  # Components Metrics:
+  #   - Kafka REST: https://docs.confluent.io/current/kafka-rest/monitoring.html
+  #   - Kafka Schema Registry: https://docs.confluent.io/current/schema-registry/monitoring.html
   - include:
-      domain: kafka.rest
-      bean: kafka.rest:type=jersey-metrics
+      domain_regex: kafka\.(rest|schema\.registry)
+      bean_regex: kafka\.(rest|schema\.registry):type=jetty-metrics
       attribute:
         brokers.list.request-error-rate:
           alias: $domain.$type.$attribute

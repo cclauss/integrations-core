@@ -110,14 +110,59 @@ SCHEMA_REGISTRY_METRICS = [
     'kafka.schema.registry.jetty_metrics.connections_opened_rate',
 ]
 
+SCHEMA_REGISTRY_JERSEY_METRICS = [
+    'kafka.schema.registry.jersey_metrics.brokers.list.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.assign_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.assignment_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.commit.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.commit_offsets_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.committed_offsets_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.create.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.create_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.delete.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.delete_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.records.read_avro_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.records.read_binary_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.records.read_json_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.seek_to_beginning_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.seek_to_end_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.seek_to_offset_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.subscribe_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.subscription_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.topic.read_avro.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.topic.read_binary.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.topic.read_json.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.unsubscribe_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.consume_avro.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.consume_binary.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.consume_json.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.get.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.get_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.produce_avro.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.produce_avro_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.produce_binary.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.produce_binary_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.produce_json.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.produce_json_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partitions.list.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partitions.list_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.root.get.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.root.post.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.topic.get.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.topic.produce_avro.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.topic.produce_binary.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.topic.produce_json.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.topics.list.request_error_rate',
+]
+
 BROKER_OPTIONAL_METRICS = [
     'kafka.log.log_flush_stats.log_flush_rate_and_time_ms.avg',
 ]
 
-METRICS = BROKER_METRICS + CONNECT_METRICS + REST_METRICS + REST_JERSEY_METRICS + SCHEMA_REGISTRY_METRICS
+ALWAYS_PRESENT_METRICS = BROKER_METRICS + CONNECT_METRICS + REST_METRICS + SCHEMA_REGISTRY_METRICS
 
-# metrics not always present
-OPTIONAL_METRICS = BROKER_OPTIONAL_METRICS
+NOT_ALWAYS_PRESENT_METRICS = BROKER_OPTIONAL_METRICS + REST_JERSEY_METRICS + SCHEMA_REGISTRY_JERSEY_METRICS
 
 
 @pytest.mark.e2e
@@ -130,10 +175,10 @@ def test_e2e(dd_agent_check):
         if metric_name.startswith('jvm.'):
             aggregator.assert_metric(metric_name)
 
-    for metric in METRICS:
+    for metric in ALWAYS_PRESENT_METRICS:
         aggregator.assert_metric(metric)
 
-    for metric in OPTIONAL_METRICS:
+    for metric in NOT_ALWAYS_PRESENT_METRICS:
         aggregator.assert_metric(metric, at_least=0)
 
     aggregator.assert_all_metrics_covered()
