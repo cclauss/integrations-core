@@ -356,7 +356,7 @@ init_config:
   - include:
       domain_regex: kafka\..*
       bean_regex: kafka\.connect:type=connector-task-metrics,connector=.*,task=.*
-      attribute:s
+      attribute:
         batch-size-avg:
           # The average size of the batches processed by the connector.
           alias: $domain.$type.$attribute
@@ -387,5 +387,158 @@ init_config:
           metric_type: gauge
         running-ratio:
           # The fraction of time this task has spent in the running state.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+
+  # Kafka Connect Metrics
+  # https://kafka.apache.org/documentation/#connect_monitoring
+  - include:
+      domain_regex: kafka\..*
+      bean_regex: kafka\.connect:type=sink-task-metrics,connector=.*,task=.*
+      attribute:
+        offset-commit-completion-rate:
+          # The average per-second number of offset commit completions that were completed successfully.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        offset-commit-completion-total:
+          # The total number of offset commit completions that were completed successfully.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        offset-commit-seq-no:
+          # The current sequence number for offset commits.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        offset-commit-skip-rate:
+          # The average per-second number of offset commit completions that were received too late and skipped/ignored.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        offset-commit-skip-total:
+          # The total number of offset commit completions that were received too late and skipped/ignored.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        partition-count:
+          # The number of topic partitions assigned to this task belonging to the named sink connector in this worker.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        put-batch-avg-time-ms:
+          # The average time taken by this task to put a batch of sinks records.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        put-batch-max-time-ms:
+          # The maximum time taken by this task to put a batch of sinks records.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        sink-record-active-count:
+          # The number of records that have been read from Kafka but not yet completely committed/flushed/acknowledged by the sink task.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        sink-record-active-count-avg:
+          # The average number of records that have been read from Kafka but not yet completely committed/flushed/acknowledged by the sink task.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        sink-record-active-count-max:
+          # The maximum number of records that have been read from Kafka but not yet completely committed/flushed/acknowledged by the sink task.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        sink-record-lag-max:
+          # The maximum lag in terms of number of records that the sink task is behind the consumer's position for any topic partitions.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        sink-record-read-rate:
+          # The average per-second number of records read from Kafka for this task belonging to the named sink connector in this worker. This is before transformations are applied.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        sink-record-read-total:
+          # The total number of records read from Kafka by this task belonging to the named sink connector in this worker, since the task was last restarted.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        sink-record-send-rate:
+          # The average per-second number of records output from the transformations and sent/put to this task belonging to the named sink connector in this worker. This is after transformations are applied and excludes any records filtered out by the transformations.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        sink-record-send-total:
+          # The total number of records output from the transformations and sent/put to this task belonging to the named sink connector in this worker, since the task was last restarted.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+
+  # Kafka Connect Metrics
+  # https://kafka.apache.org/documentation/#connect_monitoring
+  - include:
+      domain_regex: kafka\..*
+      bean_regex: kafka\.connect:type=source-task-metrics,connector=.*,task=.*
+      attribute:
+        poll-batch-avg-time-ms:
+          # The average time in milliseconds taken by this task to poll for a batch of source records.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        poll-batch-max-time-ms:
+          # The maximum time in milliseconds taken by this task to poll for a batch of source records.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        source-record-active-count:
+          # The number of records that have been produced by this task but not yet completely written to Kafka.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        source-record-active-count-avg:
+          # The average number of records that have been produced by this task but not yet completely written to Kafka.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        source-record-active-count-max:
+          # The maximum number of records that have been produced by this task but not yet completely written to Kafka.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        source-record-poll-rate:
+          # The average per-second number of records produced/polled (before transformation) by this task belonging to the named source connector in this worker.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        source-record-poll-total:
+          # The total number of records produced/polled (before transformation) by this task belonging to the named source connector in this worker.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        source-record-write-rate:
+          # The average per-second number of records output from the transformations and written to Kafka for this task belonging to the named source connector in this worker. This is after transformations are applied and excludes any records filtered out by the transformations.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        source-record-write-total:
+          # The number of records output from the transformations and written to Kafka for this task belonging to the named source connector in this worker, since the task was last restarted.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+
+  # Kafka Connect Metrics
+  # https://kafka.apache.org/documentation/#connect_monitoring
+  - include:
+      domain_regex: kafka\..*
+      bean_regex: kafka\.connect:type=task-error-metrics,connector=.*,task=.*
+      attribute:
+        deadletterqueue-produce-failures:
+          # The number of failed writes to the dead letter queue.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        deadletterqueue-produce-requests:
+          # The number of attempted writes to the dead letter queue.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        last-error-timestamp:
+          # The epoch timestamp when this task last encountered an error.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        total-errors-logged:
+          # The number of errors that were logged.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        total-record-errors:
+          # The number of record processing errors in this task.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        total-record-failures:
+          # The number of record processing failures in this task.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        total-records-skipped:
+          # The number of records skipped due to errors.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        total-retries:
+          # The number of operations retried.
           alias: $domain.$type.$attribute
           metric_type: gauge
