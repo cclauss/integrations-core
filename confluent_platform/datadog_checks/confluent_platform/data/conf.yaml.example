@@ -156,7 +156,7 @@ init_config:
       # class_regex: .*$Gauge
       domain_regex: kafka\..*
       bean:
-        # Broker Metrics
+        # Kafka Broker Metrics
         - kafka.controller:type=KafkaController,name=OfflinePartitionsCount
         - kafka.controller:type=KafkaController,name=ActiveControllerCount
         - kafka.server:type=ReplicaManager,name=UnderMinIsrPartitionCount
@@ -178,7 +178,7 @@ init_config:
       # class_regex: .*$Gauge
       domain_regex: kafka\..*
       bean_regex:
-        # Broker Metrics
+        # Kafka Broker Metrics
         - kafka\.cluster:type=Partition,name=UnderMinIsr,.*
         - kafka\.server:type=FetcherLagMetrics,name=ConsumerLag,.*
       attribute:
@@ -191,7 +191,7 @@ init_config:
       # class_regex: .*$Meter
       domain_regex: kafka\..*
       bean:
-        # Broker Metrics
+        # Kafka Broker Metrics
         - kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec
         - kafka.server:type=BrokerTopicMetrics,name=BytesOutPerSec
         - kafka.server:type=BrokerTopicMetrics,name=TotalProduceRequestsPerSec
@@ -213,7 +213,7 @@ init_config:
       # class_regex: .*$Meter
       domain_regex: kafka\..*
       bean_regex:
-        # Broker Metrics
+        # Kafka Broker Metrics
         - kafka.network:type=RequestMetrics,name=RequestsPerSec,request=(Produce|FetchConsumer|FetchFollower).*
       attribute:
         Count:
@@ -225,7 +225,7 @@ init_config:
       # class_regex: .*$Timer
       domain_regex: kafka\..*
       bean:
-        # Broker Metrics
+        # Kafka Broker Metrics
         - kafka.controller:type=ControllerStats,name=LeaderElectionRateAndTimeMs
         - kafka.log:type=LogFlushStats,name=LogFlushRateAndTimeMs
       attribute:
@@ -241,7 +241,7 @@ init_config:
       # class_regex: .*$Histogram
       domain_regex: kafka\..*
       bean_regex:
-        # Broker Metrics
+        # Kafka Broker Metrics
         - kafka\.network:type=RequestMetrics,name=TotalTimeMs,request=(Produce|FetchConsumer|FetchFollower).*
         - kafka\.network:type=RequestMetrics,name=RequestQueueTimeMs,request=(Produce|FetchConsumer|FetchFollower).*
         - kafka\.network:type=RequestMetrics,name=LocalTimeMs,request=(Produce|FetchConsumer|FetchFollower).*
@@ -256,8 +256,9 @@ init_config:
           alias: $domain.$type.$name.avg
           metric_type: gauge
 
+  # Kafka Connect Metrics
+  # https://kafka.apache.org/documentation/#connect_monitoring
   - include:
-      # https://kafka.apache.org/documentation/#connect_monitoring
       domain_regex: kafka\..*
       bean: kafka.connect:type=connect-worker-metrics
       attribute:
@@ -295,5 +296,57 @@ init_config:
           alias: $domain.$type.$attribute
           metric_type: gauge
         task-startup-success-total:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+
+  # Kafka Connect Metrics
+  # https://kafka.apache.org/documentation/#connect_monitoring
+  - include:
+      domain_regex: kafka\..*
+      # Recent metrics merged on 3 Oct 2019: https://github.com/apache/kafka/pull/6843
+      # Probably not present in the connector we are using for testing
+      bean_regex: kafka\.connect:type=connect-worker-metrics,connector=.*
+      attribute:
+        connector-destroyed-task-count:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        connector-failed-task-count:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        connector-paused-task-count:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        connector-running-task-count:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        connector-total-task-count:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        connector-unassigned-task-count:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+
+  # Kafka Connect Metrics
+  # https://kafka.apache.org/documentation/#connect_monitoring
+  - include:
+      domain_regex: kafka\..*
+      bean: kafka.connect:type=connect-worker-rebalance-metrics
+      attribute:
+        completed-rebalances-total:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        epoch:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        rebalance-avg-time-ms:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        rebalance-max-time-ms:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        rebalancing:
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        time-since-last-rebalance-ms:
           alias: $domain.$type.$attribute
           metric_type: gauge
