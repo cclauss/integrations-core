@@ -25,7 +25,6 @@ def test_e2e(dd_agent_check):
     # Mark jvm. metrics as asserted
     for metric_name in aggregator._metrics:
         if metric_name.startswith('jvm.'):
-            print(aggregator._metrics[metric_name])
             aggregator.assert_metric(metric_name)
 
     for metric in build_metrics(checked_only=True):

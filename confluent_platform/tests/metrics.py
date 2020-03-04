@@ -105,7 +105,7 @@ def get_beans_config():
             'alias': '$domain.$type.$name',
             'metrics': [
                 Metric(COUNT, 'count', check_metric=False),  # `agent check` doesn't return jmx count metrics yet
-                Metric(GAUGE, 'mean', per_unit_name='second'),
+                Metric(GAUGE, 'avg', per_unit_name='second'),
 
                 # Note: metrics below commented for now since we are unsure about the value brought by those
                 # Metric(GAUGE, '50percentile', per_unit_name='second'),
@@ -132,7 +132,7 @@ def get_beans_config():
             'alias': '$domain.$type.$name',
             'metrics': [
                 Metric(COUNT, 'count', check_metric=False),  # `agent check` doesn't return jmx count metrics yet
-                Metric(GAUGE, 'mean', per_unit_name='second'),
+                Metric(GAUGE, 'avg', per_unit_name='second'),
 
                 # Note: metrics below commented for now since we are unsure about the value brought by those
                 # Metric(GAUGE, '50percentile', per_unit_name='second'),

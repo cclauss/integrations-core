@@ -233,7 +233,7 @@ init_config:
           alias: $domain.$type.$name.rate
           metric_type: rate
         Mean:
-          alias: $domain.$type.$name.mean
+          alias: $domain.$type.$name.avg
           metric_type: gauge
 
   - include:
@@ -253,5 +253,5 @@ init_config:
           alias: $domain.$type.$name.rate
           metric_type: rate
         Mean:
-          alias: $domain.$type.$name.mean
+          alias: $domain.$type.$name.avg
           metric_type: gauge
