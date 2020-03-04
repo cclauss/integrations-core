@@ -22,8 +22,8 @@ instances:
     port: 31006      # OK
   - host: localhost  # confluentinc/cp-schema-registry
     port: 31007      # OK
-#  - host: localhost  # confluentinc/cp-enterprise-replicator
-#    port: 31008      # OK
+  - host: localhost  # confluentinc/cp-enterprise-replicator
+    port: 31008      # OK
 
     ## @param host - string - required
     ## Kafka host to connect to.
@@ -709,3 +709,92 @@ init_config:
         master-slave-role:
           alias: $domain.$type.$attribute
           metric_type: gauge
+
+  # Components Metrics:
+  #   - Confluent Replicator: https://docs.confluent.io/current/multi-dc-deployments/replicator/replicator-monitoring.html
+  - include:
+      domain: confluent.replicator
+      bean_regex: confluent\.replicator:type=confluent-replicator-task-metrics,confluent-replicator-task=.*,confluent-replicator-task-topic-partition=.*
+      attribute:
+        confluent-replicator-task-topic-partition-message-lag:
+          # The number of messages that were produced to the origin cluster, but have not yet arrived to the destination cluster.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        confluent-replicator-task-topic-partition-throughput:
+          # The number of messages replicated per second from the source to destination cluster.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        confluent-replicator-task-topic-partition-latency:
+          # The average time between message production to the source cluster and message production to the destination cluster.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+
+  # Components Metrics:
+  #   - Confluent Replicator Important Producer Metrics: https://docs.confluent.io/current/multi-dc-deployments/replicator/replicator-monitoring.html#important-producer-metrics
+  - include:
+      domain: kafka.producer
+      bean_regex: kafka\.producer:type=producer-metrics,client-id=.*
+      attribute:
+        io-ratio:
+          # If the io-ratio is low or io-wait-ratio is high, this means the producer is not very busy and is unlikely to be a bottleneck.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        io-wait-ratio:
+          # If the io-ratio is low or io-wait-ratio is high, this means the producer is not very busy and is unlikely to be a bottleneck.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        outgoing-byte-rate:
+          # Reports the producer throughput when writing to destination Kafka.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        batch-size-avg:
+          # If they are consistently close to the configured batch.size, you may be producing as fast as possible and you’ll want to increase the batch size to get better batching.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        batch-size-max:
+          # If they are consistently close to the configured batch.size, you may be producing as fast as possible and you’ll want to increase the batch size to get better batching.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        record-retry-rate:
+          # The average per-second number of retried record sends and failed record sends for a topic. High number of those can indicate issues writing to the destination cluster.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        record-error-rate:
+          # The average per-second number of retried record sends and failed record sends for a topic. High number of those can indicate issues writing to the destination cluster.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        produce-throttle-time-avg:
+          # Produce requests may be throttled to meet quotas configured on the destination cluster. If these are non-zero, it indicates that the destination brokers are slowing the producer down and the quotas configuration should be reviewed. For more information on quotas see Enforcing Client Quotas.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        produce-throttle-time-max:
+          # Produce requests may be throttled to meet quotas configured on the destination cluster. If these are non-zero, it indicates that the destination brokers are slowing the producer down and the quotas configuration should be reviewed. For more information on quotas see Enforcing Client Quotas.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        waiting-threads:
+          # Non-zero values here indicate memory pressure. Connect producers can’t send events fast enough, resulting in full memory buffers that cause Replicator threads to block.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        bufferpool-wait-time-total:
+          # Non-zero values here indicate memory pressure. Connect producers can’t send events fast enough, resulting in full memory buffers that cause Replicator threads to block.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+
+#- Replicator
+#    - Confluent Replicator is a Kafka Connect-based tool for replicating data between Kafka clusters in different data centers.
+#    - [Documentation](https://docs.confluent.io/current/connect/kafka-connect-replicator/index.html)
+#    - [Metrics](https://docs.confluent.io/current/multi-dc-deployments/replicator/replicator-monitoring.html) (6 metrics + 12 metrics subset of producer/consumer)
+
+#
+#- KSQL
+#    - An event streaming database.
+#    - [Documentation](https://www.confluent.io/product/ksql/)
+#    - [Metrics](https://docs.confluent.io/current/ksql/docs/installation/server-config/index.html#jmx-metrics) (11 metrics)
+#- Kafka Streams applications
+#    - Kafka Streams is a client library for building applications where the input and output are stored in clusters.
+#    - [Documentation](https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html)
+#    - [Metrics](https://docs.confluent.io/current/streams/monitoring.html#built-in-metrics) (93 metrics)
+
+#- RBAC and LDAP Health Metrics
+#    - [Metrics](https://docs.confluent.io/current/kafka/monitoring.html#rbac-and-ldap-health-metrics) (8 metrics)
+#

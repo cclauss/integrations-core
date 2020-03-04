@@ -164,11 +164,26 @@ BROKER_OPTIONAL_METRICS = [
     'kafka.log.log_flush_stats.log_flush_rate_and_time_ms.avg',
 ]
 
+REPLICATOR_PRODUCER_METRICS = [
+    'kafka.producer.producer_metrics.batch_size_avg',
+    'kafka.producer.producer_metrics.batch_size_max',
+    'kafka.producer.producer_metrics.bufferpool_wait_time_total',
+    'kafka.producer.producer_metrics.io_ratio',
+    'kafka.producer.producer_metrics.io_wait_ratio',
+    'kafka.producer.producer_metrics.outgoing_byte_rate',
+    'kafka.producer.producer_metrics.produce_throttle_time_avg',
+    'kafka.producer.producer_metrics.produce_throttle_time_max',
+    'kafka.producer.producer_metrics.record_error_rate',
+    'kafka.producer.producer_metrics.record_retry_rate',
+    'kafka.producer.producer_metrics.waiting_threads',
+]
+
 ALWAYS_PRESENT_METRICS = (BROKER_METRICS
                           + CONNECT_METRICS
                           + REST_JETTY_METRICS
                           + SCHEMA_REGISTRY_JETTY_METRICS
                           + SCHEMA_REGISTRY_METRICS
+                          + REPLICATOR_PRODUCER_METRICS
                           )
 
 NOT_ALWAYS_PRESENT_METRICS = (BROKER_OPTIONAL_METRICS
