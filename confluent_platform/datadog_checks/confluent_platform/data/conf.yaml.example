@@ -8,8 +8,8 @@ instances:
 
 #  - host: localhost  # confluentinc/cp-zookeeper
 #    port: 31000      # OK
-#  - host: localhost  # confluentinc/cp-server
-#    port: 31001      # OK
+  - host: localhost  # confluentinc/cp-server
+    port: 31001      # OK
   - host: localhost  # cnfldemos/cp-server-connect-datagen
     port: 31002      # OK
 ##  - host: localhost  # confluentinc/cp-enterprise-control-center

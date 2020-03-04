@@ -62,9 +62,3 @@ def test_e2e(dd_agent_check):
         aggregator.assert_metric(metric)
 
     aggregator.assert_all_metrics_covered()
-
-    # for metric_name, metrics in iteritems(aggregator._metrics):
-    #     # print("{} => {}".format(metric_name, metrics))
-    #     print(metric_name)
-    # # for metric in ACTIVEMQ_E2E_METRICS:
-    #     aggregator.assert_metric(metric)
