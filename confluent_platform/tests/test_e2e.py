@@ -45,6 +45,11 @@ CONNECT_METRICS = [
     'kafka.connect.connect_worker_metrics.task_startup_failure_total',
     'kafka.connect.connect_worker_metrics.task_startup_success_percentage',
     'kafka.connect.connect_worker_metrics.task_startup_success_total',
+
+    'kafka.connect.connect_worker_rebalance_metrics.completed_rebalances_total',
+    'kafka.connect.connect_worker_rebalance_metrics.epoch',
+    'kafka.connect.connect_worker_rebalance_metrics.rebalancing',
+    'kafka.connect.connect_worker_rebalance_metrics.time_since_last_rebalance_ms',
 ]
 
 BROKER_OPTIONAL_METRICS = [
