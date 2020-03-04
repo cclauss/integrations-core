@@ -20,8 +20,8 @@ instances:
 ##    port: 31005      # DOES NOT WORK
   - host: localhost  # confluentinc/cp-kafka-rest
     port: 31006      # OK
-#  - host: localhost  # confluentinc/cp-schema-registry
-#    port: 31007      # OK
+  - host: localhost  # confluentinc/cp-schema-registry
+    port: 31007      # OK
 #  - host: localhost  # confluentinc/cp-enterprise-replicator
 #    port: 31008      # OK
 
@@ -543,11 +543,12 @@ init_config:
           alias: $domain.$type.$attribute
           metric_type: gauge
 
-  # Kafka REST Metrics
-  # https://docs.confluent.io/current/kafka-rest/monitoring.html
+  # Components Metrics:
+  #   - Kafka REST: https://docs.confluent.io/current/kafka-rest/monitoring.html
+  #   - Kafka Schema Registry: https://docs.confluent.io/current/schema-registry/monitoring.html
   - include:
-      domain: kafka.rest
-      bean: kafka.rest:type=jetty-metrics
+      domain_regex: kafka\.(rest|schema\.registry)
+      bean_regex: kafka\.(rest|schema\.registry):type=jetty-metrics
       attribute:
         connections-active:
           # Total number of active TCP connections.
