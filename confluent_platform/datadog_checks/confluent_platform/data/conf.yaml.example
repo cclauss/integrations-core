@@ -143,7 +143,7 @@ init_config:
   ## @param collect_default_metrics - boolean - required
   ## Whether or not the check should collect all default metrics for this integration.
   #
-  collect_default_metrics: true
+  collect_default_metrics: false
 
   ## @param conf - list of objects - required
   ## List of metrics to be collected by the integration
@@ -156,6 +156,7 @@ init_config:
       # class_regex: .*$Gauge
       domain_regex: kafka\..*
       bean:
+        # Broker Metrics
         - kafka.controller:type=KafkaController,name=OfflinePartitionsCount
         - kafka.controller:type=KafkaController,name=ActiveControllerCount
         - kafka.server:type=ReplicaManager,name=UnderMinIsrPartitionCount
@@ -177,6 +178,7 @@ init_config:
       # class_regex: .*$Gauge
       domain_regex: kafka\..*
       bean_regex:
+        # Broker Metrics
         - kafka\.cluster:type=Partition,name=UnderMinIsr,.*
         - kafka\.server:type=FetcherLagMetrics,name=ConsumerLag,.*
       attribute:
@@ -188,6 +190,43 @@ init_config:
       # Uncomment when https://github.com/DataDog/jmxfetch/pull/277 is merged
       # class_regex: .*$Meter
       domain_regex: kafka\..*
+      bean:
+        # Broker Metrics
+        - kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec
+        - kafka.server:type=BrokerTopicMetrics,name=BytesOutPerSec
+        - kafka.server:type=BrokerTopicMetrics,name=TotalProduceRequestsPerSec
+        - kafka.server:type=BrokerTopicMetrics,name=TotalFetchRequestsPerSec
+        - kafka.server:type=BrokerTopicMetrics,name=FailedProduceRequestsPerSec
+        - kafka.server:type=BrokerTopicMetrics,name=FailedFetchRequestsPerSec
+        - kafka.controller:type=ControllerStats,name=UncleanLeaderElectionsPerSec
+        - kafka.server:type=KafkaRequestHandlerPool,name=RequestHandlerAvgIdlePercent
+        - kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec
+        - kafka.server:type=ReplicaManager,name=IsrShrinksPerSec
+        - kafka.server:type=ReplicaManager,name=IsrExpandsPerSec
+      attribute:
+        Count:
+          alias: $domain.$type.$name.count
+          metric_type: monotonic_count
+        MeanRate:
+          alias: $domain.$type.$name.mean_rate
+          metric_type: gauge
+        OneMinuteRate:
+          alias: $domain.$type.$name.one_minute_rate
+          metric_type: gauge
+        FiveMinuteRate:
+          alias: $domain.$type.$name.five_minute_rate
+          metric_type: gauge
+        FifteenMinuteRate:
+          alias: $domain.$type.$name.fifteen_minute_rate
+          metric_type: gauge
+
+  - include:
+      # Uncomment when https://github.com/DataDog/jmxfetch/pull/277 is merged
+      # class_regex: .*$Meter
+      domain_regex: kafka\..*
+      bean_regex:
+        # Broker Metrics
+        - kafka.network:type=RequestMetrics,name=RequestsPerSec,request=(Produce|FetchConsumer|FetchFollower).*
       attribute:
         Count:
           alias: $domain.$type.$name.count
@@ -209,6 +248,10 @@ init_config:
       # Uncomment when https://github.com/DataDog/jmxfetch/pull/277 is merged
       # class_regex: .*$Timer
       domain_regex: kafka\..*
+      bean:
+        # Broker Metrics
+        - kafka.controller:type=ControllerStats,name=LeaderElectionRateAndTimeMs
+        - kafka.log:type=LogFlushStats,name=LogFlushRateAndTimeMs
       attribute:
         Count:
           alias: $domain.$type.$name.count
@@ -258,8 +301,16 @@ init_config:
 
   - include:
       # Uncomment when https://github.com/DataDog/jmxfetch/pull/277 is merged
-      # class_regex: .*$Histograma
+      # class_regex: .*$Histogram
       domain_regex: kafka\..*
+      bean_regex:
+        # Broker Metrics
+        - kafka\.network:type=RequestMetrics,name=TotalTimeMs,request=(Produce|FetchConsumer|FetchFollower).*
+        - kafka\.network:type=RequestMetrics,name=RequestQueueTimeMs,request=(Produce|FetchConsumer|FetchFollower).*
+        - kafka\.network:type=RequestMetrics,name=LocalTimeMs,request=(Produce|FetchConsumer|FetchFollower).*
+        - kafka\.network:type=RequestMetrics,name=RemoteTimeMs,request=(Produce|FetchConsumer|FetchFollower).*
+        - kafka\.network:type=RequestMetrics,name=ResponseQueueTimeMs,request=(Produce|FetchConsumer|FetchFollower).*
+        - kafka\.network:type=RequestMetrics,name=ResponseSendTimeMs,request=(Produce|FetchConsumer|FetchFollower).*
       attribute:
         Count:
           alias: $domain.$type.$name.count
