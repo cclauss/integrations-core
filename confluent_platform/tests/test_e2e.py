@@ -179,6 +179,9 @@ REPLICATOR_PRODUCER_METRICS = [
     'kafka.producer.producer_metrics.record_error_rate',
     'kafka.producer.producer_metrics.record_retry_rate',
     'kafka.producer.producer_metrics.waiting_threads',
+    'kafka.producer.producer_metrics.connection_count',
+    'kafka.producer.producer_metrics.network_io_rate',
+    'kafka.producer.producer_metrics.request_rate',
 ]
 
 REPLICATOR_CONSUMER_METRICS = [
