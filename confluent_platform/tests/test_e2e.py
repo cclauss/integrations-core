@@ -54,10 +54,10 @@ CONNECT_METRICS = [
 
 REST_JETTY_METRICS = [
     'kafka.rest.jetty_metrics.connections_active',
-    'kafka.rest.jetty_metrics.connections_opened_rate',
 ]
 
 REST_JETTY_METRICS_OPTIONAL = [
+    'kafka.rest.jetty_metrics.connections_opened_rate',
     'kafka.rest.jetty_metrics.connections_closed_rate',
 ]
 
@@ -192,8 +192,15 @@ REPLICATOR_CONSUMER_METRICS = [
     'kafka.consumer.consumer_metrics.request_rate',
 ]
 
-REPLICATOR_CONSUMER_METRICS_OPTIONAL = [
-
+KSQL_QUERY_STATS = [
+    'confluent.ksql.query_stats.bytes_consumed_total',
+    'confluent.ksql.query_stats.error_rate',
+    'confluent.ksql.query_stats.messages_consumed_per_sec',
+    'confluent.ksql.query_stats.messages_consumed_total',
+    'confluent.ksql.query_stats.messages_produced_per_sec',
+    'confluent.ksql.query_stats.num_active_queries',
+    'confluent.ksql.query_stats.num_idle_queries',
+    'confluent.ksql.query_stats.num_persistent_queries',
 ]
 
 ALWAYS_PRESENT_METRICS = (BROKER_METRICS
@@ -203,13 +210,13 @@ ALWAYS_PRESENT_METRICS = (BROKER_METRICS
                           + SCHEMA_REGISTRY_METRICS
                           + REPLICATOR_PRODUCER_METRICS
                           + REPLICATOR_CONSUMER_METRICS
+                          + KSQL_QUERY_STATS
                           )
 
 NOT_ALWAYS_PRESENT_METRICS = (BROKER_OPTIONAL_METRICS
                               + REST_JERSEY_METRICS
                               + SCHEMA_REGISTRY_JERSEY_METRICS
                               + REST_JETTY_METRICS_OPTIONAL
-                              + REPLICATOR_CONSUMER_METRICS_OPTIONAL
                               )
 
 

@@ -14,8 +14,8 @@ instances:
     port: 31002      # OK
 ##  - host: localhost  # confluentinc/cp-enterprise-control-center
 ##    port: 31003      # DOES NOT WORK
-#  - host: localhost  # confluentinc/cp-ksql-server
-#    port: 31004      # OK
+  - host: localhost  # confluentinc/cp-ksql-server
+    port: 31004      # OK
 ##  - host: localhost  # confluentinc/ksql-examples
 ##    port: 31005      # DOES NOT WORK
   - host: localhost  # confluentinc/cp-kafka-rest
@@ -813,8 +813,6 @@ init_config:
 
   # Components Metrics:
   #   - Confluent Replicator Important Consumer Metrics: https://docs.confluent.io/current/multi-dc-deployments/replicator/replicator-monitoring.html#important-consumer-metrics
-  # Note about `*-total` metrics:
-  #   Since we already have `*-rate`, we can use `gauge` type for `*-total` metrics to avoid losing data (using `rate` or `monotonic_count` will only give us the delta).
   - include:
       domain: kafka.consumer
       bean_regex: kafka\.consumer:type=consumer-metrics,client-id=.*
@@ -884,10 +882,56 @@ init_config:
           alias: $domain.$type.$attribute
           metric_type: gauge
 
-#- Replicator
-#    - Confluent Replicator is a Kafka Connect-based tool for replicating data between Kafka clusters in different data centers.
-#    - [Documentation](https://docs.confluent.io/current/connect/kafka-connect-replicator/index.html)
-#    - [Metrics](https://docs.confluent.io/current/multi-dc-deployments/replicator/replicator-monitoring.html) (6 metrics + 12 metrics subset of producer/consumer)
+  # Components Metrics:
+  #   - Confluent KSQL: https://docs.confluent.io/current/ksql/docs/installation/server-config/index.html#jmx-metrics
+  - include:
+      domain: io.confluent.ksql.metrics
+      bean: io.confluent.ksql.metrics:type=_confluent-ksql-default_ksql-engine-query-stats
+      attribute:
+        bytes-consumed-total:
+          # Number of bytes consumed across all queries.
+          alias: confluent.ksql.query_stats.$attribute
+          metric_type: gauge
+        error-rate:
+          # Number of messages that have been consumed but not processed across all queries.
+          alias: confluent.ksql.query_stats.$attribute
+          metric_type: gauge
+        messages-consumed-avg:
+          # Average number of messages consumed by a query per second.
+          alias: confluent.ksql.query_stats.$attribute
+          metric_type: gauge
+        messages-consumed-per-sec:
+          # Number of messages consumed per second across all queries.
+          alias: confluent.ksql.query_stats.$attribute
+          metric_type: gauge
+        messages-consumed-min:
+          # Number of messages consumed per second for the query with the fewest messages consumed per second.
+          alias: confluent.ksql.query_stats.$attribute
+          metric_type: gauge
+        messages-consumed-max:
+          # Number of messages consumed per second for the query with the most messages consumed per second.
+          alias: confluent.ksql.query_stats.$attribute
+          metric_type: gauge
+        messages-consumed-total:
+          # Number of messages consumed across all queries.
+          alias: confluent.ksql.query_stats.$attribute
+          metric_type: gauge
+        messages-produced-per-sec:
+          # Number of messages produced per second across all queries.
+          alias: confluent.ksql.query_stats.$attribute
+          metric_type: gauge
+        num-persistent-queries:
+          # Number of persistent queries that are currently executing.
+          alias: confluent.ksql.query_stats.$attribute
+          metric_type: gauge
+        num-active-queries:
+          # Number of queries that are actively processing messages.
+          alias: confluent.ksql.query_stats.$attribute
+          metric_type: gauge
+        num-idle-queries:
+          # Number of queries with no messages available to process.
+          alias: confluent.ksql.query_stats.$attribute
+          metric_type: gauge
 
 #
 #- KSQL
