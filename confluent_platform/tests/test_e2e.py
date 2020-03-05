@@ -184,6 +184,9 @@ REPLICATOR_PRODUCER_METRICS = [
 REPLICATOR_CONSUMER_METRICS = [
     'kafka.consumer.consumer_metrics.io_ratio',
     'kafka.consumer.consumer_metrics.io_wait_ratio',
+    'kafka.consumer.consumer_metrics.connection_count',
+    'kafka.consumer.consumer_metrics.network_io_rate',
+    'kafka.consumer.consumer_metrics.request_rate',
 ]
 
 REPLICATOR_CONSUMER_METRICS_OPTIONAL = [

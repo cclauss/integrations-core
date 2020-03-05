@@ -856,6 +856,19 @@ init_config:
           alias: $domain.$type.$attribute
           metric_type: gauge
 
+        # metrics not listed in official doc, but might be useful to collect
+        connection-count:
+          # The current number of active connections.
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        network-io-rate:
+          # The number of network operations (reads or writes) on all connections per second
+          alias: $domain.$type.$attribute
+          metric_type: gauge
+        request-rate:
+          # The number of requests sent per second
+          alias: $domain.$type.$attribute
+          metric_type: gauge
 
 #- Replicator
 #    - Confluent Replicator is a Kafka Connect-based tool for replicating data between Kafka clusters in different data centers.
