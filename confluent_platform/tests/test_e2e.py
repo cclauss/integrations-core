@@ -3,10 +3,8 @@
 # Licensed under a 3-clause BSD style license (see LICENSE)
 
 import pytest
-from six import iteritems
 
 from datadog_checks.base.stubs.aggregator import AggregatorStub
-from .metrics import build_metrics
 
 # https://docs.confluent.io/current/kafka/monitoring.html#broker-metrics
 
@@ -45,7 +43,6 @@ CONNECT_METRICS = [
     'kafka.connect.connect_worker_metrics.task_startup_failure_total',
     'kafka.connect.connect_worker_metrics.task_startup_success_percentage',
     'kafka.connect.connect_worker_metrics.task_startup_success_total',
-
     'kafka.connect.connect_worker_rebalance_metrics.completed_rebalances_total',
     'kafka.connect.connect_worker_rebalance_metrics.epoch',
     'kafka.connect.connect_worker_rebalance_metrics.rebalancing',
@@ -208,22 +205,24 @@ KSQL_QUERY_STATS = [
     'confluent.ksql.query_stats.num_persistent_queries',
 ]
 
-ALWAYS_PRESENT_METRICS = (BROKER_METRICS
-                          + CONNECT_METRICS
-                          + REST_JETTY_METRICS
-                          + SCHEMA_REGISTRY_JETTY_METRICS
-                          + SCHEMA_REGISTRY_METRICS
-                          + REPLICATOR_PRODUCER_METRICS
-                          + REPLICATOR_CONSUMER_METRICS
-                          + KSQL_QUERY_STATS
-                          )
+ALWAYS_PRESENT_METRICS = (
+    BROKER_METRICS
+    + CONNECT_METRICS
+    + REST_JETTY_METRICS
+    + SCHEMA_REGISTRY_JETTY_METRICS
+    + SCHEMA_REGISTRY_METRICS
+    + REPLICATOR_PRODUCER_METRICS
+    + REPLICATOR_CONSUMER_METRICS
+    + KSQL_QUERY_STATS
+)
 
-NOT_ALWAYS_PRESENT_METRICS = (BROKER_OPTIONAL_METRICS
-                              + REST_JERSEY_METRICS
-                              + SCHEMA_REGISTRY_JERSEY_METRICS
-                              + REST_JETTY_METRICS_OPTIONAL
-                              + CONNECT_METRICS_OPTIONAL
-                              )
+NOT_ALWAYS_PRESENT_METRICS = (
+    BROKER_OPTIONAL_METRICS
+    + REST_JERSEY_METRICS
+    + SCHEMA_REGISTRY_JERSEY_METRICS
+    + REST_JETTY_METRICS_OPTIONAL
+    + CONNECT_METRICS_OPTIONAL
+)
 
 
 @pytest.mark.e2e

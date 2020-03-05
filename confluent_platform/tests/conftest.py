@@ -9,14 +9,15 @@ import pytest
 import requests
 
 from datadog_checks.dev import docker_run
-from datadog_checks.dev.conditions import WaitForPortListening
 from datadog_checks.dev.utils import load_jmx_config
 
-from .common import BASE_URL, HERE, HOST, TEST_AUTH, TEST_MESSAGE, TEST_PORT, TEST_QUEUES, TEST_TOPICS
+from .common import BASE_URL, HERE, TEST_AUTH, TEST_MESSAGE, TEST_QUEUES, TEST_TOPICS
 
 
 def populate_server():
-    """Add some queues and topics to ensure more metrics are available."""
+    """
+    Add some queues and topics to ensure more metrics are available.
+    """
     time.sleep(3)
 
     for queue in TEST_QUEUES:

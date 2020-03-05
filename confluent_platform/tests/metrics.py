@@ -68,11 +68,13 @@ def get_beans_config():
             reader = csv.DictReader(f)
             for row in reader:
                 check_metric = row['check_metric'] == 'TRUE'
-                bean = MBean(row['bean'],
-                             yammer_type=row['type'],
-                             unit_name=row['unit_name'],
-                             desc=row['description'],
-                             check_metric=check_metric)
+                bean = MBean(
+                    row['bean'],
+                    yammer_type=row['type'],
+                    unit_name=row['unit_name'],
+                    desc=row['description'],
+                    check_metric=check_metric,
+                )
                 all_beans.append(bean)
 
     return [
@@ -80,10 +82,8 @@ def get_beans_config():
             # Yammer Gauge
             # https://metrics.dropwizard.io/2.2.0/apidocs/com/yammer/metrics/core/Gauge.html
             'alias': '$domain.$type.$name',
-            'metrics': [
-                Metric(GAUGE),
-            ],
-            'beans': [b for b in all_beans if b.yammer_type == 'YAMMER_GAUGE']
+            'metrics': [Metric(GAUGE)],
+            'beans': [b for b in all_beans if b.yammer_type == 'YAMMER_GAUGE'],
         },
         {
             # Yammer Meter
@@ -93,14 +93,13 @@ def get_beans_config():
             'alias': '$domain.$type.$name',
             'metrics': [
                 Metric(COUNT, 'count', check_metric=False),  # `agent check` doesn't return jmx count metrics yet
-
                 # Note: metrics below commented for now since we are unsure about the value brought by those
                 # Metric(GAUGE, 'mean_rate', per_unit_name='second'),
                 # Metric(GAUGE, 'fifteen_minute_rate', per_unit_name='second'),
                 # Metric(GAUGE, 'five_minute_rate', per_unit_name='second'),
                 # Metric(GAUGE, 'one_minute_rate', per_unit_name='second'),
             ],
-            'beans': [b for b in all_beans if b.yammer_type == 'YAMMER_METER']
+            'beans': [b for b in all_beans if b.yammer_type == 'YAMMER_METER'],
         },
         {
             # Yammer Timer
@@ -111,7 +110,6 @@ def get_beans_config():
             'metrics': [
                 Metric(COUNT, 'count', check_metric=False),  # `agent check` doesn't return jmx count metrics yet
                 Metric(GAUGE, 'avg', per_unit_name='second'),
-
                 # Note: metrics below commented for now since we are unsure about the value brought by those
                 # Metric(GAUGE, '50percentile', per_unit_name='second'),
                 # Metric(GAUGE, '75percentile', per_unit_name='second'),
@@ -127,7 +125,7 @@ def get_beans_config():
                 # Metric(GAUGE, 'min', per_unit_name='second'),
                 # Metric(GAUGE, 'std_dev', per_unit_name='second'),
             ],
-            'beans': [b for b in all_beans if b.yammer_type == 'YAMMER_TIMER']
+            'beans': [b for b in all_beans if b.yammer_type == 'YAMMER_TIMER'],
         },
         {
             # Yammer Histogram
@@ -138,7 +136,6 @@ def get_beans_config():
             'metrics': [
                 Metric(COUNT, 'count', check_metric=False),  # `agent check` doesn't return jmx count metrics yet
                 Metric(GAUGE, 'avg', per_unit_name='second'),
-
                 # Note: metrics below commented for now since we are unsure about the value brought by those
                 # Metric(GAUGE, '50percentile', per_unit_name='second'),
                 # Metric(GAUGE, '75percentile', per_unit_name='second'),
@@ -150,36 +147,56 @@ def get_beans_config():
                 # Metric(GAUGE, 'min', per_unit_name='second'),
                 # Metric(GAUGE, 'std_dev', per_unit_name='second'),
             ],
-            'beans': [b for b in all_beans if b.yammer_type == 'YAMMER_HISTOGRAM']
+            'beans': [b for b in all_beans if b.yammer_type == 'YAMMER_HISTOGRAM'],
         },
         # Connector Metrics
         {
             'alias': '$domain.$type',
             'metrics': [
                 Metric(GAUGE, "connector-count", desc="The number of connectors run in this worker."),
-                Metric(GAUGE, "connector-startup-attempts-total",
-                       desc="The total number of connector startups that this worker has attempted."),
-                Metric(GAUGE, "connector-startup-failure-percentage",
-                       desc="The average percentage of this worker's connectors starts that failed."),
-                Metric(GAUGE, "connector-startup-failure-total",
-                       desc="The total number of connector starts that failed."),
-                Metric(GAUGE, "connector-startup-success-percentage",
-                       desc="The average percentage of this worker's connectors starts that succeeded."),
-                Metric(GAUGE, "connector-startup-success-total",
-                       desc="The total number of connector starts that succeeded."),
+                Metric(
+                    GAUGE,
+                    "connector-startup-attempts-total",
+                    desc="The total number of connector startups that this worker has attempted.",
+                ),
+                Metric(
+                    GAUGE,
+                    "connector-startup-failure-percentage",
+                    desc="The average percentage of this worker's connectors starts that failed.",
+                ),
+                Metric(
+                    GAUGE, "connector-startup-failure-total", desc="The total number of connector starts that failed."
+                ),
+                Metric(
+                    GAUGE,
+                    "connector-startup-success-percentage",
+                    desc="The average percentage of this worker's connectors starts that succeeded.",
+                ),
+                Metric(
+                    GAUGE,
+                    "connector-startup-success-total",
+                    desc="The total number of connector starts that succeeded.",
+                ),
                 Metric(GAUGE, "task-count", desc="The number of tasks run in this worker."),
-                Metric(GAUGE, "task-startup-attempts-total",
-                       desc="The total number of task startups that this worker has attempted."),
-                Metric(GAUGE, "task-startup-failure-percentage",
-                       desc="The average percentage of this worker's tasks starts that failed."),
+                Metric(
+                    GAUGE,
+                    "task-startup-attempts-total",
+                    desc="The total number of task startups that this worker has attempted.",
+                ),
+                Metric(
+                    GAUGE,
+                    "task-startup-failure-percentage",
+                    desc="The average percentage of this worker's tasks starts that failed.",
+                ),
                 Metric(GAUGE, "task-startup-failure-total", desc="The total number of task starts that failed."),
-                Metric(GAUGE, "task-startup-success-percentage",
-                       desc="The average percentage of this worker's tasks starts that succeeded."),
+                Metric(
+                    GAUGE,
+                    "task-startup-success-percentage",
+                    desc="The average percentage of this worker's tasks starts that succeeded.",
+                ),
                 Metric(GAUGE, "task-startup-success-total", desc="The total number of task starts that succeeded."),
             ],
-            'beans': [
-                MBean('kafka.connect:type=connect-worker-metrics', check_metric=True)
-            ]
+            'beans': [MBean('kafka.connect:type=connect-worker-metrics', check_metric=True)],
         },
     ]
 
