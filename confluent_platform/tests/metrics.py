@@ -1,264 +1,220 @@
-# (C) Datadog, Inc. 2019-present
+# (C) Datadog, Inc. 2020-present
 # All rights reserved
 # Licensed under a 3-clause BSD style license (see LICENSE)
-import csv
-import io
-import os
-import re
-
-from .common import HERE
-
-GAUGE = 'gauge'
-RATE = 'rate'
-COUNT = 'count'
 
 
-class Attribute:
-    def __init__(self, name, check_metric=True):
-        self.name = name
-        self.check_metric = check_metric
+BROKER_METRICS = [
+    'kafka.cluster.partition.under_min_isr',
+    'kafka.controller.controller_stats.leader_election_rate_and_time_ms.avg',
+    'kafka.controller.kafka_controller.active_controller_count',
+    'kafka.controller.kafka_controller.offline_partitions_count',
+    'kafka.network.request_channel.request_queue_size',
+    'kafka.network.request_metrics.local_time_ms.avg',
+    'kafka.network.request_metrics.remote_time_ms.avg',
+    'kafka.network.request_metrics.request_queue_time_ms.avg',
+    'kafka.network.request_metrics.response_queue_time_ms.avg',
+    'kafka.network.request_metrics.response_send_time_ms.avg',
+    'kafka.network.request_metrics.total_time_ms.avg',
+    'kafka.network.socket_server.network_processor_avg_idle_percent',
+    'kafka.server.delayed_operation_purgatory.purgatory_size',
+    'kafka.server.delayed_operation_purgatory.purgatory_size',
+    'kafka.server.replica_fetcher_manager.max_lag',
+    'kafka.server.replica_manager.leader_count',
+    'kafka.server.replica_manager.partition_count',
+    'kafka.server.replica_manager.under_min_isr_partition_count',
+    'kafka.server.replica_manager.under_replicated_partitions',
+]
 
+CONNECT_METRICS = [
+    'kafka.connect.connect_worker_metrics.connector_count',
+    'kafka.connect.connect_worker_metrics.connector_startup_attempts_total',
+    'kafka.connect.connect_worker_metrics.connector_startup_failure_percentage',
+    'kafka.connect.connect_worker_metrics.connector_startup_failure_total',
+    'kafka.connect.connect_worker_metrics.connector_startup_success_percentage',
+    'kafka.connect.connect_worker_metrics.connector_startup_success_total',
+    'kafka.connect.connect_worker_metrics.task_count',
+    'kafka.connect.connect_worker_metrics.task_startup_attempts_total',
+    'kafka.connect.connect_worker_metrics.task_startup_failure_percentage',
+    'kafka.connect.connect_worker_metrics.task_startup_failure_total',
+    'kafka.connect.connect_worker_metrics.task_startup_success_percentage',
+    'kafka.connect.connect_worker_metrics.task_startup_success_total',
+    'kafka.connect.connect_worker_rebalance_metrics.completed_rebalances_total',
+    'kafka.connect.connect_worker_rebalance_metrics.epoch',
+    'kafka.connect.connect_worker_rebalance_metrics.rebalancing',
+    'kafka.connect.connect_worker_rebalance_metrics.time_since_last_rebalance_ms',
+]
 
-class Metric:
-    def __init__(self, metric_type, suffix=None, per_unit_name='', desc='', orientation=0, check_metric=True):
-        self.suffix = suffix
-        self.metric_type = metric_type
-        self.per_unit_name = per_unit_name
-        self.desc = desc
-        self.orientation = orientation
-        self.check_metric = check_metric
+CONNECT_METRICS_OPTIONAL = [
+    'kafka.connect.connect_worker_rebalance_metrics.rebalance_avg_time_ms',
+    'kafka.connect.connect_worker_rebalance_metrics.rebalance_max_time_ms',
+]
 
+REST_JETTY_METRICS = [
+    'kafka.rest.jetty_metrics.connections_active',
+]
 
-class MBean:
-    def __init__(self, bean_name, yammer_type=None, desc='', unit_name='', attrs=None, check_metric=True):
-        self.bean_name = bean_name
-        self.desc = desc
-        self.unit_name = unit_name
-        self.attrs = attrs
-        self.check_metric = check_metric
-        self.domain, self.props = self._parse_name(bean_name)
-        self.yammer_type = yammer_type
+REST_JETTY_METRICS_OPTIONAL = [
+    'kafka.rest.jetty_metrics.connections_opened_rate',
+    'kafka.rest.jetty_metrics.connections_closed_rate',
+]
 
-    @staticmethod
-    def _parse_name(name):
-        domain, raw_props = name.split(':', 1)
+REST_JERSEY_METRICS = [
+    'kafka.rest.jersey_metrics.brokers.list.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.assign_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.assignment_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.commit.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.commit_offsets_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.committed_offsets_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.create.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.create_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.delete.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.delete_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.records.read_avro_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.records.read_binary_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.records.read_json_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.seek_to_beginning_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.seek_to_end_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.seek_to_offset_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.subscribe_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.subscription_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.topic.read_avro.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.topic.read_binary.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.topic.read_json.request_error_rate',
+    'kafka.rest.jersey_metrics.consumer.unsubscribe_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.consume_avro.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.consume_binary.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.consume_json.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.get.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.get_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.produce_avro.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.produce_avro_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.produce_binary.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.produce_binary_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.produce_json.request_error_rate',
+    'kafka.rest.jersey_metrics.partition.produce_json_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.partitions.list.request_error_rate',
+    'kafka.rest.jersey_metrics.partitions.list_v2.request_error_rate',
+    'kafka.rest.jersey_metrics.request_error_rate',
+    'kafka.rest.jersey_metrics.root.get.request_error_rate',
+    'kafka.rest.jersey_metrics.root.post.request_error_rate',
+    'kafka.rest.jersey_metrics.topic.get.request_error_rate',
+    'kafka.rest.jersey_metrics.topic.produce_avro.request_error_rate',
+    'kafka.rest.jersey_metrics.topic.produce_binary.request_error_rate',
+    'kafka.rest.jersey_metrics.topic.produce_json.request_error_rate',
+    'kafka.rest.jersey_metrics.topics.list.request_error_rate',
+]
 
-        props = {}
-        for raw_prop in raw_props.split(','):
-            k, v = raw_prop.split('=', 1)
-            props[k] = v
+SCHEMA_REGISTRY_JETTY_METRICS = [
+    'kafka.schema.registry.jetty_metrics.connections_active',
+    'kafka.schema.registry.jetty_metrics.connections_closed_rate',
+    'kafka.schema.registry.jetty_metrics.connections_opened_rate',
+]
 
-        return domain, props
+SCHEMA_REGISTRY_JERSEY_METRICS = [
+    'kafka.schema.registry.jersey_metrics.brokers.list.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.assign_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.assignment_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.commit.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.commit_offsets_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.committed_offsets_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.create.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.create_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.delete.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.delete_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.records.read_avro_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.records.read_binary_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.records.read_json_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.seek_to_beginning_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.seek_to_end_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.seek_to_offset_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.subscribe_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.subscription_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.topic.read_avro.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.topic.read_binary.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.topic.read_json.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.consumer.unsubscribe_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.consume_avro.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.consume_binary.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.consume_json.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.get.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.get_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.produce_avro.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.produce_avro_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.produce_binary.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.produce_binary_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.produce_json.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partition.produce_json_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partitions.list.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.partitions.list_v2.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.root.get.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.root.post.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.topic.get.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.topic.produce_avro.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.topic.produce_binary.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.topic.produce_json.request_error_rate',
+    'kafka.schema.registry.jersey_metrics.topics.list.request_error_rate',
+]
 
-    def get_metric_name(self, alias, suffix):
-        metric_name = alias.replace('$domain', camel_to_snake(self.domain))
-        metric_name = metric_name.replace('$type', camel_to_snake(self.props['type']))
-        if '$name' in metric_name:
-            metric_name = metric_name.replace('$name', camel_to_snake(self.props['name']))
-        if suffix:
-            metric_name = "{}.{}".format(metric_name, suffix)
-        metric_name = metric_name.replace('-', '_')
-        return metric_name
+SCHEMA_REGISTRY_METRICS = [
+    'kafka.schema.registry.master_slave_role.master_slave_role',
+]
 
+BROKER_OPTIONAL_METRICS = [
+    'kafka.log.log_flush_stats.log_flush_rate_and_time_ms.avg',
+]
 
-def get_beans_config():
-    all_beans = []
-    for component in ['broker', 'connector']:
-        with open(os.path.join(HERE, 'metrics', '{}.csv'.format(component)), 'r') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                check_metric = row['check_metric'] == 'TRUE'
-                bean = MBean(
-                    row['bean'],
-                    yammer_type=row['type'],
-                    unit_name=row['unit_name'],
-                    desc=row['description'],
-                    check_metric=check_metric,
-                )
-                all_beans.append(bean)
+REPLICATOR_PRODUCER_METRICS = [
+    'kafka.producer.producer_metrics.batch_size_avg',
+    'kafka.producer.producer_metrics.batch_size_max',
+    'kafka.producer.producer_metrics.bufferpool_wait_time_total',
+    'kafka.producer.producer_metrics.io_ratio',
+    'kafka.producer.producer_metrics.io_wait_ratio',
+    'kafka.producer.producer_metrics.outgoing_byte_rate',
+    'kafka.producer.producer_metrics.produce_throttle_time_avg',
+    'kafka.producer.producer_metrics.produce_throttle_time_max',
+    'kafka.producer.producer_metrics.record_error_rate',
+    'kafka.producer.producer_metrics.record_retry_rate',
+    'kafka.producer.producer_metrics.waiting_threads',
+    'kafka.producer.producer_metrics.connection_count',
+    'kafka.producer.producer_metrics.network_io_rate',
+    'kafka.producer.producer_metrics.request_rate',
+]
 
-    return [
-        {
-            # Yammer Gauge
-            # https://metrics.dropwizard.io/2.2.0/apidocs/com/yammer/metrics/core/Gauge.html
-            'alias': '$domain.$type.$name',
-            'metrics': [Metric(GAUGE)],
-            'beans': [b for b in all_beans if b.yammer_type == 'YAMMER_GAUGE'],
-        },
-        {
-            # Yammer Meter
-            # https://metrics.dropwizard.io/2.2.0/apidocs/com/yammer/metrics/core/Meter.html
-            # Note:
-            # - `count` is monotonically increasing
-            'alias': '$domain.$type.$name',
-            'metrics': [
-                Metric(COUNT, 'count', check_metric=False),  # `agent check` doesn't return jmx count metrics yet
-                # Note: metrics below commented for now since we are unsure about the value brought by those
-                # Metric(GAUGE, 'mean_rate', per_unit_name='second'),
-                # Metric(GAUGE, 'fifteen_minute_rate', per_unit_name='second'),
-                # Metric(GAUGE, 'five_minute_rate', per_unit_name='second'),
-                # Metric(GAUGE, 'one_minute_rate', per_unit_name='second'),
-            ],
-            'beans': [b for b in all_beans if b.yammer_type == 'YAMMER_METER'],
-        },
-        {
-            # Yammer Timer
-            # https://metrics.dropwizard.io/2.2.0/apidocs/com/yammer/metrics/core/Timer.html
-            # Note:
-            # - `count` is monotonically increasing
-            'alias': '$domain.$type.$name',
-            'metrics': [
-                Metric(COUNT, 'count', check_metric=False),  # `agent check` doesn't return jmx count metrics yet
-                Metric(GAUGE, 'avg', per_unit_name='second'),
-                # Note: metrics below commented for now since we are unsure about the value brought by those
-                # Metric(GAUGE, '50percentile', per_unit_name='second'),
-                # Metric(GAUGE, '75percentile', per_unit_name='second'),
-                # Metric(GAUGE, '95percentile', per_unit_name='second'),
-                # Metric(GAUGE, '98percentile', per_unit_name='second'),
-                # Metric(GAUGE, '99percentile', per_unit_name='second'),
-                # Metric(GAUGE, '999percentile', per_unit_name='second'),
-                # Metric(GAUGE, 'fifteen_minute_rate', per_unit_name='second'),
-                # Metric(GAUGE, 'five_minute_rate', per_unit_name='second'),
-                # Metric(GAUGE, 'one_minute_rate', per_unit_name='second'),
-                # Metric(GAUGE, 'max', per_unit_name='second'),
-                # Metric(GAUGE, 'mean_rate', per_unit_name='second'),
-                # Metric(GAUGE, 'min', per_unit_name='second'),
-                # Metric(GAUGE, 'std_dev', per_unit_name='second'),
-            ],
-            'beans': [b for b in all_beans if b.yammer_type == 'YAMMER_TIMER'],
-        },
-        {
-            # Yammer Histogram
-            # https://metrics.dropwizard.io/2.2.0/apidocs/com/yammer/metrics/core/Histogram.html
-            # Note:
-            # - `count` is monotonically increasing
-            'alias': '$domain.$type.$name',
-            'metrics': [
-                Metric(COUNT, 'count', check_metric=False),  # `agent check` doesn't return jmx count metrics yet
-                Metric(GAUGE, 'avg', per_unit_name='second'),
-                # Note: metrics below commented for now since we are unsure about the value brought by those
-                # Metric(GAUGE, '50percentile', per_unit_name='second'),
-                # Metric(GAUGE, '75percentile', per_unit_name='second'),
-                # Metric(GAUGE, '95percentile', per_unit_name='second'),
-                # Metric(GAUGE, '98percentile', per_unit_name='second'),
-                # Metric(GAUGE, '99percentile', per_unit_name='second'),
-                # Metric(GAUGE, '999percentile', per_unit_name='second'),
-                # Metric(GAUGE, 'max', per_unit_name='second'),
-                # Metric(GAUGE, 'min', per_unit_name='second'),
-                # Metric(GAUGE, 'std_dev', per_unit_name='second'),
-            ],
-            'beans': [b for b in all_beans if b.yammer_type == 'YAMMER_HISTOGRAM'],
-        },
-        # Connector Metrics
-        {
-            'alias': '$domain.$type',
-            'metrics': [
-                Metric(GAUGE, "connector-count", desc="The number of connectors run in this worker."),
-                Metric(
-                    GAUGE,
-                    "connector-startup-attempts-total",
-                    desc="The total number of connector startups that this worker has attempted.",
-                ),
-                Metric(
-                    GAUGE,
-                    "connector-startup-failure-percentage",
-                    desc="The average percentage of this worker's connectors starts that failed.",
-                ),
-                Metric(
-                    GAUGE, "connector-startup-failure-total", desc="The total number of connector starts that failed."
-                ),
-                Metric(
-                    GAUGE,
-                    "connector-startup-success-percentage",
-                    desc="The average percentage of this worker's connectors starts that succeeded.",
-                ),
-                Metric(
-                    GAUGE,
-                    "connector-startup-success-total",
-                    desc="The total number of connector starts that succeeded.",
-                ),
-                Metric(GAUGE, "task-count", desc="The number of tasks run in this worker."),
-                Metric(
-                    GAUGE,
-                    "task-startup-attempts-total",
-                    desc="The total number of task startups that this worker has attempted.",
-                ),
-                Metric(
-                    GAUGE,
-                    "task-startup-failure-percentage",
-                    desc="The average percentage of this worker's tasks starts that failed.",
-                ),
-                Metric(GAUGE, "task-startup-failure-total", desc="The total number of task starts that failed."),
-                Metric(
-                    GAUGE,
-                    "task-startup-success-percentage",
-                    desc="The average percentage of this worker's tasks starts that succeeded.",
-                ),
-                Metric(GAUGE, "task-startup-success-total", desc="The total number of task starts that succeeded."),
-            ],
-            'beans': [MBean('kafka.connect:type=connect-worker-metrics', check_metric=True)],
-        },
-    ]
+REPLICATOR_CONSUMER_METRICS = [
+    'kafka.consumer.consumer_metrics.io_ratio',
+    'kafka.consumer.consumer_metrics.io_wait_ratio',
+    'kafka.consumer.consumer_metrics.connection_count',
+    'kafka.consumer.consumer_metrics.network_io_rate',
+    'kafka.consumer.consumer_metrics.request_rate',
+]
 
+KSQL_QUERY_STATS = [
+    'confluent.ksql.query_stats.bytes_consumed_total',
+    'confluent.ksql.query_stats.error_rate',
+    'confluent.ksql.query_stats.messages_consumed_per_sec',
+    'confluent.ksql.query_stats.messages_consumed_total',
+    'confluent.ksql.query_stats.messages_produced_per_sec',
+    'confluent.ksql.query_stats.num_active_queries',
+    'confluent.ksql.query_stats.num_idle_queries',
+    'confluent.ksql.query_stats.num_persistent_queries',
+]
 
-def build_one_metric(metric, alias, bean, current_metrics):
-    current_metrics = current_metrics or {}
-    metric_name = bean.get_metric_name(alias, metric.suffix)
-    desc = bean.desc.rstrip('.')
+ALWAYS_PRESENT_METRICS = (
+    BROKER_METRICS
+    + CONNECT_METRICS
+    + REST_JETTY_METRICS
+    + SCHEMA_REGISTRY_JETTY_METRICS
+    + SCHEMA_REGISTRY_METRICS
+    + REPLICATOR_PRODUCER_METRICS
+    + REPLICATOR_CONSUMER_METRICS
+    + KSQL_QUERY_STATS
+)
 
-    if metric.desc:
-        desc = metric.desc
-    else:
-        desc = "{} ({})".format(desc, metric.suffix)
-
-    current_metric = current_metrics.get(metric_name)
-    new_row = {
-        'metric_name': metric_name,
-        'metric_type': metric.metric_type,
-        'description': desc,
-        'unit_name': bean.unit_name,
-        'integration': 'confluent_platform',
-    }
-    if current_metric:
-        for field in ['orientation']:
-            new_row[field] = current_metric[field]
-    return new_row
-
-
-def build_metadata_csv(orig_metadata):
-    reader = csv.DictReader(io.StringIO(orig_metadata))
-    current_metrics = {}
-    for row in reader:
-        current_metrics[row['metric_name']] = row
-
-    headers = reader.fieldnames
-    out = io.StringIO()
-    writer = csv.DictWriter(out, fieldnames=headers, lineterminator='\n')
-    writer.writeheader()
-
-    rows = build_metrics(current_metrics)
-
-    writer.writerows(rows)
-    content = out.getvalue()
-    out.close()
-    return content
-
-
-def build_metrics(current_metrics=None, checked_only=False):
-    rows = []
-    for group in get_beans_config():
-        alias = group['alias']
-        metrics = group['metrics']
-        for mbean in group['beans']:  # type: MBean
-            if checked_only and not mbean.check_metric:
-                continue
-            for metric in metrics:
-                if checked_only and not metric.check_metric:
-                    continue
-                rows.append(build_one_metric(metric, alias, mbean, current_metrics))
-    return rows
-
-
-def camel_to_snake(name):
-    name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
+NOT_ALWAYS_PRESENT_METRICS = (
+    BROKER_OPTIONAL_METRICS
+    + REST_JERSEY_METRICS
+    + SCHEMA_REGISTRY_JERSEY_METRICS
+    + REST_JETTY_METRICS_OPTIONAL
+    + CONNECT_METRICS_OPTIONAL
+)
