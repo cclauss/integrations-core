@@ -54,8 +54,11 @@ CONNECT_METRICS = [
 
 REST_JETTY_METRICS = [
     'kafka.rest.jetty_metrics.connections_active',
-    'kafka.rest.jetty_metrics.connections_closed_rate',
     'kafka.rest.jetty_metrics.connections_opened_rate',
+]
+
+REST_JETTY_METRICS_OPTIONAL = [
+    'kafka.rest.jetty_metrics.connections_closed_rate',
 ]
 
 REST_JERSEY_METRICS = [
@@ -165,12 +168,46 @@ BROKER_OPTIONAL_METRICS = [
 ]
 
 REPLICATOR_PRODUCER_METRICS = [
+    'kafka.producer.producer_metrics.connection_close_rate',
+    'kafka.producer.producer_metrics.connection_close_total',
+    'kafka.producer.producer_metrics.connection_count',
+    'kafka.producer.producer_metrics.connection_creation_rate',
+    'kafka.producer.producer_metrics.connection_creation_total',
+    'kafka.producer.producer_metrics.failed_authentication_rate',
+    'kafka.producer.producer_metrics.failed_authentication_total',
+    'kafka.producer.producer_metrics.failed_reauthentication_rate',
+    'kafka.producer.producer_metrics.failed_reauthentication_total',
+    'kafka.producer.producer_metrics.incoming_byte_rate',
+    'kafka.producer.producer_metrics.incoming_byte_total',
+    'kafka.producer.producer_metrics.io_ratio',
+    'kafka.producer.producer_metrics.io_time_ns_avg',
+    'kafka.producer.producer_metrics.io_wait_ratio',
+    'kafka.producer.producer_metrics.io_wait_time_ns_avg',
+    'kafka.producer.producer_metrics.io_waittime_total',
+    'kafka.producer.producer_metrics.iotime_total',
+    'kafka.producer.producer_metrics.network_io_rate',
+    'kafka.producer.producer_metrics.network_io_total',
+    'kafka.producer.producer_metrics.outgoing_byte_rate',
+    'kafka.producer.producer_metrics.outgoing_byte_total',
+    'kafka.producer.producer_metrics.request_rate',
+    'kafka.producer.producer_metrics.request_size_avg',
+    'kafka.producer.producer_metrics.request_size_max',
+    'kafka.producer.producer_metrics.request_total',
+    'kafka.producer.producer_metrics.response_rate',
+    'kafka.producer.producer_metrics.response_total',
+    'kafka.producer.producer_metrics.select_rate',
+    'kafka.producer.producer_metrics.select_total',
+    'kafka.producer.producer_metrics.successful_authentication_no_reauth_total',
+    'kafka.producer.producer_metrics.successful_authentication_rate',
+    'kafka.producer.producer_metrics.successful_authentication_total',
+    'kafka.producer.producer_metrics.successful_reauthentication_rate',
+    'kafka.producer.producer_metrics.successful_reauthentication_total',
+]
+
+REPLICATOR_PRODUCER_METRICS_OPTIONAL = [
     'kafka.producer.producer_metrics.batch_size_avg',
     'kafka.producer.producer_metrics.batch_size_max',
     'kafka.producer.producer_metrics.bufferpool_wait_time_total',
-    'kafka.producer.producer_metrics.io_ratio',
-    'kafka.producer.producer_metrics.io_wait_ratio',
-    'kafka.producer.producer_metrics.outgoing_byte_rate',
     'kafka.producer.producer_metrics.produce_throttle_time_avg',
     'kafka.producer.producer_metrics.produce_throttle_time_max',
     'kafka.producer.producer_metrics.record_error_rate',
@@ -188,7 +225,10 @@ ALWAYS_PRESENT_METRICS = (BROKER_METRICS
 
 NOT_ALWAYS_PRESENT_METRICS = (BROKER_OPTIONAL_METRICS
                               + REST_JERSEY_METRICS
-                              + SCHEMA_REGISTRY_JERSEY_METRICS)
+                              + SCHEMA_REGISTRY_JERSEY_METRICS
+                              + REST_JETTY_METRICS_OPTIONAL
+                              + REPLICATOR_PRODUCER_METRICS_OPTIONAL
+                              )
 
 
 @pytest.mark.e2e
