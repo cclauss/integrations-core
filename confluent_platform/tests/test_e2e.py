@@ -52,6 +52,11 @@ CONNECT_METRICS = [
     'kafka.connect.connect_worker_rebalance_metrics.time_since_last_rebalance_ms',
 ]
 
+CONNECT_METRICS_OPTIONAL = [
+    'kafka.connect.connect_worker_rebalance_metrics.rebalance_avg_time_ms',
+    'kafka.connect.connect_worker_rebalance_metrics.rebalance_max_time_ms',
+]
+
 REST_JETTY_METRICS = [
     'kafka.rest.jetty_metrics.connections_active',
 ]
@@ -217,6 +222,7 @@ NOT_ALWAYS_PRESENT_METRICS = (BROKER_OPTIONAL_METRICS
                               + REST_JERSEY_METRICS
                               + SCHEMA_REGISTRY_JERSEY_METRICS
                               + REST_JETTY_METRICS_OPTIONAL
+                              + CONNECT_METRICS_OPTIONAL
                               )
 
 
