@@ -13,6 +13,27 @@ from datadog_checks.dev.utils import load_jmx_config
 
 from .common import BASE_URL, HERE, TEST_AUTH, TEST_MESSAGE, TEST_QUEUES, TEST_TOPICS
 
+INSTANCES = [
+    {'host': 'localhost',  # confluentinc/cp-zookeeper
+     'port': '31000'},  # OK
+    {'host': 'localhost',  # confluentinc/cp-server
+     'port': '31001'},  # OK
+    {'host': 'localhost',  # cnfldemos/cp-server-connect-datagen
+     'port': '31002'},  # OK
+    {'host': 'localhost',  # confluentinc/cp-enterprise-control-center
+     'port': '31003'},  # DOES NOT WORK
+    {'host': 'localhost',  # confluentinc/cp-ksql-server
+     'port': '31004'},  # OK
+    {'host': 'localhost',  # confluentinc/ksql-examples
+     'port': '31015'},  # LOCAL ONLY
+    {'host': 'localhost',  # confluentinc/cp-kafka-rest
+     'port': '31006'},  # OK
+    {'host': 'localhost',  # confluentinc/cp-schema-registry
+     'port': '31007'},  # OK
+    {'host': 'localhost',  # confluentinc/cp-enterprise-replicator
+     'port': '31008'},  # OK
+]
+
 
 def populate_server():
     """
@@ -32,8 +53,10 @@ def populate_server():
 @pytest.fixture(scope="session")
 def dd_environment():
     with docker_run(
-        os.path.join(HERE, 'compose', 'docker-compose.yaml'),
-        log_patterns=['Monitored service is now ready'],
-        # conditions=[WaitForPortListening(HOST, TEST_PORT), populate_server],
+            os.path.join(HERE, 'compose', 'docker-compose.yaml'),
+            log_patterns=['Monitored service is now ready'],
+            # conditions=[WaitForPortListening(HOST, TEST_PORT), populate_server],
     ):
-        yield load_jmx_config(), {'use_jmx': True}
+        config = load_jmx_config()
+        config['instances'] = INSTANCES
+        yield config, {'use_jmx': True}
